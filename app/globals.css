@@ -1,0 +1,254 @@
+@import "tailwindcss";
+
+/* Dark mode is toggled by a `dark` class on <html> (set by next-themes). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * BRAND COLORS: change them here, in one place.
+ * Every pair below was checked for WCAG AA contrast (4.5:1 for normal text).
+ * Ratios are noted next to each value so you can re-check if you edit them.
+ */
+:root {
+  --background: #ffffff;
+  --foreground: #0f172a; /* 17.85:1 on background */
+  --muted: #475569; /* secondary text, 7.58:1 on background */
+  --surface: #ffffff; /* cards */
+  --border: #e2e8f0;
+
+  --primary: #19a7ce; /* brand: buttons, icons, borders, badges */
+  --primary-foreground: #0f172a; /* text ON primary, 6.34:1 (white would be 2.81:1, fails) */
+  --primary-dark: #0b7a99; /* links + small brand text on white, 4.93:1 */
+  --primary-tint: #edf8fb; /* 8% primary on white; primary-dark on it = 4.56:1 */
+}
+
+.dark {
+  --background: #0f172a; /* deep navy */
+  --foreground: #ffffff; /* 17.85:1 */
+  --muted: #94a3b8; /* 6.96:1 on background, 5.71:1 on surface */
+  --surface: #1e293b; /* cards */
+  --border: #334155;
+
+  --primary: #19a7ce;
+  --primary-foreground: #0f172a; /* navy text on buttons, 6.34:1 */
+  /* #0B7A99 is only 3.62:1 on navy (fails), so links use the brand color in dark mode:
+     6.34:1 on background, 5.20:1 on surface, 5.54:1 on tint */
+  --primary-dark: #19a7ce;
+  --primary-tint: #10253a; /* 10% primary on navy */
+}
+
+/* Expose the variables above as Tailwind classes: bg-primary, text-muted, border-border, etc. */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-dark: var(--primary-dark);
+  --color-primary-tint: var(--primary-tint);
+
+  /* Font variables come from next/font in app/layout.tsx */
+  --font-sans: var(--font-jakarta);
+  --font-mono: var(--font-jetbrains);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+  }
+
+  /* Visible keyboard focus everywhere */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary;
+  }
+}
+
+/* Styles for project descriptions written in markdown (components/public/markdown.tsx) */
+@layer components {
+  .markdown {
+    @apply space-y-4 text-lg leading-relaxed;
+  }
+  .markdown h2 {
+    @apply pt-4 text-2xl font-bold tracking-tight;
+  }
+  .markdown h3 {
+    @apply pt-2 text-xl font-semibold;
+  }
+  .markdown ul {
+    @apply list-disc space-y-1 pl-6;
+  }
+  .markdown ol {
+    @apply list-decimal space-y-1 pl-6;
+  }
+  .markdown a {
+    @apply font-medium text-primary-dark underline underline-offset-4;
+  }
+  .markdown strong {
+    @apply font-semibold;
+  }
+  .markdown code {
+    @apply rounded bg-primary-tint px-1.5 py-0.5 font-mono text-[0.85em];
+  }
+  .markdown pre {
+    @apply overflow-x-auto rounded-xl border border-border bg-surface p-4 text-sm;
+  }
+  .markdown pre code {
+    @apply bg-transparent p-0;
+  }
+  .markdown blockquote {
+    @apply border-l-4 border-primary pl-4 text-muted italic;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Animations. Classes like `animate-float` come from the names below.
+ * Everything here switches off for visitors who prefer reduced motion
+ * (see the block at the end of this file).
+ * ------------------------------------------------------------------------- */
+@theme {
+  --animate-float: float 7s ease-in-out infinite; /* hero photo bobbing gently */
+  --animate-drift: drift 18s ease-in-out infinite; /* hero background glow */
+  --animate-drift-slow: drift 26s ease-in-out infinite reverse;
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes drift {
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
+    33% {
+      transform: translate(30px, -20px) scale(1.08);
+    }
+    66% {
+      transform: translate(-20px, 15px) scale(0.95);
+    }
+  }
+}
+
+@layer components {
+  /* Children that cascade in one after another once their <Reveal> scrolls
+     into view. Set --i (0, 1, 2, ...) on each child for its place in line. */
+  .stagger-child {
+    transition:
+      opacity 0.5s ease-out,
+      transform 0.5s ease-out;
+    transition-delay: calc(min(var(--i, 0), 12) * 45ms);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    [data-revealed="false"] .stagger-child {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+}
+
+/* Brand logos (components/public/skill-logo.tsx): each logo's own color,
+   swapped for a visible one where it would disappear (e.g. black X logo on navy). */
+.brand-logo {
+  fill: var(--logo-light);
+}
+.dark .brand-logo {
+  fill: var(--logo-dark);
+}
+/* Logo tiles keep a light badge in dark mode, so use the normal colors there */
+.dark .logo-badge .brand-logo {
+  fill: var(--logo-light);
+}
+
+/* Thin brand-color bar at the top that fills as you scroll down the page.
+   Uses the browser's scroll-driven animations (no JavaScript). Browsers
+   without support simply don't show it. */
+.scroll-progress {
+  display: none;
+}
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .scroll-progress {
+      display: block;
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 50;
+      height: 3px;
+      background: var(--primary);
+      transform-origin: 0 50%;
+      animation: grow-x linear both;
+      animation-timeline: scroll(root);
+    }
+  }
+}
+
+/* Experience timeline: a brand-color line "draws" down over the gray one as
+   the section scrolls into view. Without support, the gray line just shows. */
+.timeline-draw {
+  display: none;
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .timeline-draw {
+      display: block;
+      transform-origin: 50% 0;
+      animation: grow-y linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 55%;
+    }
+  }
+}
+
+@keyframes grow-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes grow-y {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+/* Smooth crossfade between pages and when switching light/dark mode
+   (browser View Transitions; browsers without support just switch instantly). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.3s;
+}
+
+/* Respect users who ask for less motion: turn off animations and smooth scrolling */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

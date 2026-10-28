@@ -1,0 +1,70 @@
+import {
+  BookOpen,
+  Briefcase,
+  Calculator,
+  CalendarDays,
+  ClipboardList,
+  Code,
+  Database,
+  FileText,
+  Globe,
+  GraduationCap,
+  Headset,
+  Heart,
+  Image,
+  Keyboard,
+  Languages,
+  Layers,
+  type LucideIcon,
+  Mail,
+  MessagesSquare,
+  Monitor,
+  NotebookPen,
+  Presentation,
+  School,
+  Sparkles,
+  Tag,
+  Tags,
+  UserRound,
+  Users,
+  Wrench,
+} from "lucide-react";
+
+// Icons you can pick for categories and services (stored by name in the database).
+// To add one: import it from lucide-react and add it to this list.
+// Browse names at https://lucide.dev/icons
+export const ICONS: Record<string, LucideIcon> = {
+  BookOpen,
+  Briefcase,
+  Calculator,
+  CalendarDays,
+  ClipboardList,
+  Code,
+  Database,
+  FileText,
+  Globe,
+  GraduationCap,
+  Headset,
+  Heart,
+  Image,
+  Keyboard,
+  Languages,
+  Layers,
+  Mail,
+  MessagesSquare,
+  Monitor,
+  NotebookPen,
+  Presentation,
+  School,
+  Sparkles,
+  Tag,
+  Tags,
+  UserRound,
+  Users,
+  Wrench,
+};
+
+export function Icon({ name, className }: { name: string; className?: string }) {
+  const Component = ICONS[name] ?? Sparkles; // fallback if the name is unknown
+  return <Component className={className} aria-hidden />;
+}
