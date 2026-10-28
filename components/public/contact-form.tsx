@@ -29,7 +29,7 @@ export function ContactForm({ profileSlug }: { profileSlug: string }) {
 
   if (state.status === "success") {
     return (
-      <div role="status" className="rounded-2xl border border-primary bg-primary-tint p-8">
+      <div role="status" className="rounded-3xl border border-primary bg-primary-tint p-8">
         <p className="text-lg font-semibold">Message sent</p>
         <p className="mt-2 text-muted">{state.message}</p>
       </div>
@@ -41,7 +41,7 @@ export function ContactForm({ profileSlug }: { profileSlug: string }) {
       action={formAction}
       onSubmit={handleSubmit}
       noValidate
-      className="relative space-y-5 rounded-2xl border border-border bg-surface p-6 sm:p-8"
+      className="relative space-y-5 rounded-3xl border border-border bg-surface p-6 sm:p-8"
     >
       {/* Tells the inbox which profile page the visitor came from */}
       <input type="hidden" name="profile_slug" value={profileSlug} />
@@ -99,7 +99,7 @@ export function ContactForm({ profileSlug }: { profileSlug: string }) {
       <button
         type="submit"
         disabled={pending}
-        className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/40 disabled:translate-y-0 disabled:opacity-70"
+        className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/40 disabled:translate-y-0 disabled:opacity-70"
       >
         {pending ? (
           <>
@@ -120,7 +120,7 @@ export function ContactForm({ profileSlug }: { profileSlug: string }) {
 }
 
 const inputClass =
-  "mt-1.5 block w-full rounded-lg border border-border bg-background px-3.5 py-2.5 text-foreground transition-colors focus:border-primary aria-[invalid=true]:border-red-600";
+  "mt-1.5 block w-full rounded-2xl border border-border bg-background px-3.5 py-2.5 text-foreground transition-colors focus:border-primary aria-[invalid=true]:border-red-600";
 
 function Field({
   label,

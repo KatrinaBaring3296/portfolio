@@ -13,7 +13,7 @@ export function Testimonials({ items, tinted }: { items: Testimonial[]; tinted: 
         {items.map((t, i) => (
           <li key={t.id}>
             <Reveal delay={i * 80} className="h-full">
-              <figure className="h-full rounded-2xl border border-border bg-surface p-6">
+              <figure className="h-full rounded-3xl border border-border bg-surface p-6">
                 <Quote className="size-6 text-primary" aria-hidden />
                 <blockquote className="mt-3 text-lg leading-relaxed">{t.quote}</blockquote>
                 <figcaption className="mt-4 text-sm">

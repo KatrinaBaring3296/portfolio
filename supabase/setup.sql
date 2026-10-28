@@ -2,8 +2,8 @@
 -- Portfolio database: EVERYTHING in one file (tables, security rules (RLS),
 -- storage buckets, and starting content).
 --
--- BEFORE RUNNING: replace you@example.com below (search "CHANGE THIS") with
--- the email used to log in to /admin (the same one as ADMIN_EMAIL).
+-- The admin email (search "admin email") must match ADMIN_EMAIL in Vercel and
+-- .env.local; only that account can log in to /admin.
 --
 -- HOW TO RUN: Supabase dashboard > SQL Editor > New query > paste this whole
 -- file > Run. Run it ONCE, on a fresh project.
@@ -33,7 +33,7 @@ create table private.admin (
   email text primary key
 );
 
-insert into private.admin (email) values ('you@example.com'); -- <-- CHANGE THIS to her admin email
+insert into private.admin (email) values ('baringkatrina3296@gmail.com'); -- <-- the admin email (same as ADMIN_EMAIL)
 
 -- True when the logged-in user's email is the admin email.
 -- "security definer" lets it read private.admin on the visitor's behalf.
@@ -821,8 +821,8 @@ insert into public.site_settings
   (id, name, email, about, social_links, availability_text, reply_time_text, default_profile_id)
 values (
   1,
-  '[Your Name]',
-  'you@example.com',
+  'Katrina A. Baring',
+  'baringkatrina3296@gmail.com',
   E'[About you: your teaching background, and the VA work you''re looking for now.]\n\n[How you work with clients: communication, time zone, reliability.]',
   '[]',
   'Available for work · Philippines (UTC+8) · Flexible hours',

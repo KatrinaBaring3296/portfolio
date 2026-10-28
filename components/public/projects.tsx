@@ -53,7 +53,7 @@ export function Projects({ items, tinted }: { items: Project[]; tinted: boolean 
               <Reveal delay={(i % 3) * 120} className="h-full">
                 <Link
                   href={`/projects/${project.slug}`}
-                  className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-surface transition hover:-translate-y-1 hover:border-primary hover:shadow-lg hover:shadow-primary/10"
+                  className="group flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-surface transition hover:-translate-y-1 hover:border-primary hover:shadow-lg hover:shadow-primary/10"
                 >
                   <SiteImage
                     src={project.cover_image}

@@ -43,7 +43,7 @@ export function ProofViewer({ items, title }: { items: ProofItem[]; title: strin
         }}
         // Clicking the dimmed background closes it
         onClick={(e) => e.target === e.currentTarget && dialogRef.current?.close()}
-        className="m-auto max-h-[92dvh] w-[calc(100%-2rem)] max-w-4xl overflow-y-auto rounded-2xl border border-border bg-surface p-0 text-foreground shadow-xl backdrop:bg-black/70"
+        className="m-auto max-h-[92dvh] w-[calc(100%-2rem)] max-w-4xl overflow-y-auto rounded-3xl border border-border bg-surface p-0 text-foreground shadow-xl backdrop:bg-black/70"
       >
         <div className="flex items-start justify-between gap-4 p-5 pb-0">
           <div>
@@ -54,7 +54,7 @@ export function ProofViewer({ items, title }: { items: ProofItem[]; title: strin
             type="button"
             onClick={() => dialogRef.current?.close()}
             aria-label="Close"
-            className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-muted hover:bg-primary-tint hover:text-foreground"
+            className="inline-flex size-9 shrink-0 items-center justify-center rounded-full text-muted hover:bg-primary-tint hover:text-foreground"
           >
             <X className="size-5" aria-hidden />
           </button>

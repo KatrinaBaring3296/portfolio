@@ -1,19 +1,20 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
+import { Fraunces, Nunito } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SITE_URL } from "@/lib/seo";
 import "./globals.css";
 
-// Main font for headings and body text
-const jakarta = Plus_Jakarta_Sans({
-  variable: "--font-jakarta",
+// Rounded, friendly font for body text and labels
+const nunito = Nunito({
+  variable: "--font-nunito",
   subsets: ["latin"],
 });
 
-// Monospace font for small tech labels (skill chips, tech-stack tags)
-const jetbrains = JetBrains_Mono({
-  variable: "--font-jetbrains",
+// Soft serif for headings (its "SOFT" setting rounds the letter edges)
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
   subsets: ["latin"],
+  axes: ["SOFT"],
 });
 
 // Site-wide defaults. Each public page sets its own title and description
@@ -33,7 +34,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     // suppressHydrationWarning: next-themes adds the "dark" class before React loads
-    <html lang="en" className={`${jakarta.variable} ${jetbrains.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${nunito.variable} ${fraunces.variable}`} suppressHydrationWarning>
       <body className="min-h-dvh">
         <ThemeProvider>{children}</ThemeProvider>
       </body>

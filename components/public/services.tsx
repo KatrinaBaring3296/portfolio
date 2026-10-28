@@ -63,7 +63,7 @@ export function Services({
                       className="stagger-child"
                       style={{ "--i": i } as React.CSSProperties}
                     >
-                      <div className="group h-full rounded-2xl border border-border bg-surface p-5 transition hover:-translate-y-1 hover:border-primary hover:shadow-lg hover:shadow-primary/10">
+                      <div className="group h-full rounded-3xl border border-border bg-surface p-5 transition hover:-translate-y-1 hover:border-primary hover:shadow-lg hover:shadow-primary/10">
                         <div className="flex items-start justify-between gap-3">
                           <span className="inline-flex size-10 items-center justify-center rounded-xl bg-primary-tint text-primary-dark transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6">
                             <Icon name={service.icon} className="size-5" />

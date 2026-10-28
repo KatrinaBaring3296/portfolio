@@ -26,7 +26,11 @@ export function SiteHeader({ name }: { name: string }) {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-        <Link href={onHomepage ? pathname : "/"} className="font-bold tracking-tight">
+        <Link
+          href={onHomepage ? pathname : "/"}
+          className="inline-flex items-center gap-2 font-display text-lg font-semibold [font-variation-settings:'SOFT'_100]"
+        >
+          <span className="size-2.5 rounded-full bg-primary" aria-hidden />
           {name}
         </Link>
 
@@ -36,7 +40,7 @@ export function SiteHeader({ name }: { name: string }) {
               <li key={item.href}>
                 <a
                   href={base + item.href}
-                  className="rounded-md px-3 py-2 text-sm text-muted transition-colors hover:bg-primary-tint hover:text-foreground"
+                  className="rounded-full px-3 py-2 text-sm font-semibold text-muted transition-colors hover:bg-primary-tint hover:text-foreground"
                 >
                   {item.label}
                 </a>
@@ -49,7 +53,7 @@ export function SiteHeader({ name }: { name: string }) {
           <ThemeToggle />
           <a
             href={base + "#contact"}
-            className="hidden rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/40 sm:inline-flex"
+            className="hidden rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/40 sm:inline-flex"
           >
             Hire me
           </a>

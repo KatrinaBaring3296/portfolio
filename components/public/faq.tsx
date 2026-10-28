@@ -14,7 +14,7 @@ export function Faq({ items, tinted }: { items: FaqItem[]; tinted: boolean }) {
         <ul className="mx-auto max-w-3xl space-y-3">
           {items.map((item, i) => (
             <li key={item.id} className="stagger-child" style={{ "--i": i } as React.CSSProperties}>
-              <details className="group rounded-2xl border border-border bg-surface transition-colors open:border-primary">
+              <details className="group rounded-3xl border border-border bg-surface transition-colors open:border-primary">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-5 font-semibold [&::-webkit-details-marker]:hidden">
                   {item.question}
                   <ChevronDown

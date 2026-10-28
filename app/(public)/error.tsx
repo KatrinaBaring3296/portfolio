@@ -19,7 +19,7 @@ export default function PublicError({ error, retry }: { error: unknown; retry: (
         <button
           type="button"
           onClick={() => retry()}
-          className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/40"
+          className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/40"
         >
           <RotateCw className="size-4" aria-hidden /> Try again
         </button>

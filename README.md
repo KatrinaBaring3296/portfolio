@@ -99,16 +99,17 @@ with its WCAG contrast ratio.
 
 | Token                | Light     | Dark      | Use                                    |
 | -------------------- | --------- | --------- | -------------------------------------- |
-| `background`         | `#FFFFFF` | `#0F172A` | Page background                        |
-| `surface`            | `#FFFFFF` | `#1E293B` | Cards                                  |
-| `foreground`         | `#0F172A` | `#FFFFFF` | Body text                              |
-| `muted`              | `#475569` | `#94A3B8` | Secondary text                         |
-| `primary`            | `#19A7CE` | `#19A7CE` | Buttons, icons, borders, badges        |
-| `primary-foreground` | `#0F172A` | `#0F172A` | Text on primary backgrounds            |
-| `primary-dark`       | `#0B7A99` | `#19A7CE` | Links and small brand-colored text     |
-| `primary-tint`       | `#EDF8FB` | `#10253A` | Soft section backgrounds, hover states |
+| `background`         | `#FFF8F1` | `#211715` | Page background (cream / espresso)     |
+| `surface`            | `#FFFFFF` | `#2D201D` | Cards                                  |
+| `foreground`         | `#3B2A24` | `#FBEFE8` | Body text                              |
+| `muted`              | `#6E5A51` | `#C9B3A8` | Secondary text                         |
+| `primary`            | `#F08A6C` | `#F2916F` | Coral: buttons, icons, borders, badges |
+| `primary-foreground` | `#3B2A24` | `#2A1A15` | Text on primary backgrounds            |
+| `primary-dark`       | `#AD4329` | `#F2916F` | Links and small brand-colored text     |
+| `primary-tint`       | `#FDEBE2` | `#3A2420` | Soft peach sections, hover states      |
+| `accent`             | `#F7B267` | `#E9A15A` | Sunny peach, decoration only           |
 
-Fonts: **Plus Jakarta Sans** (headings + body, `font-sans`) and **JetBrains Mono** (tech labels, `font-mono`).
+Fonts: **Fraunces** (soft serif headings, `font-display`) and **Nunito** (rounded body text, `font-sans`).
 
 ## Environment variables
 
@@ -120,6 +121,6 @@ See [`.env.local.example`](.env.local.example). Real values go in `.env.local`, 
 Copied from a working portfolio (same features and architecture), then:
 
 - [x] A. Copy and clean: owner content removed, one setup file, teaching/VA starting content
-- [ ] B. Warm & friendly design (coral/peach + cream)
+- [x] B. Warm & friendly design (coral/peach + cream)
 - [ ] C. Accounts and deploy: GitHub, Supabase, Vercel, Resend
 - [ ] D. Real content, filled in through the admin panel

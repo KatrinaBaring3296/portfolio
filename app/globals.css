@@ -9,31 +9,33 @@
  * Ratios are noted next to each value so you can re-check if you edit them.
  */
 :root {
-  --background: #ffffff;
-  --foreground: #0f172a; /* 17.85:1 on background */
-  --muted: #475569; /* secondary text, 7.58:1 on background */
+  --background: #fff8f1; /* warm cream */
+  --foreground: #3b2a24; /* cocoa brown, 12.93:1 on background */
+  --muted: #6e5a51; /* secondary text, 6.15:1 on background, 5.60:1 on tint */
   --surface: #ffffff; /* cards */
-  --border: #e2e8f0;
+  --border: #f0dccf;
 
-  --primary: #19a7ce; /* brand: buttons, icons, borders, badges */
-  --primary-foreground: #0f172a; /* text ON primary, 6.34:1 (white would be 2.81:1, fails) */
-  --primary-dark: #0b7a99; /* links + small brand text on white, 4.93:1 */
-  --primary-tint: #edf8fb; /* 8% primary on white; primary-dark on it = 4.56:1 */
+  --primary: #f08a6c; /* coral: buttons, icons, borders, badges */
+  --primary-foreground: #3b2a24; /* text ON coral, 5.55:1 (white would fail) */
+  --primary-dark: #ad4329; /* links + small brand text: 5.52:1 on cream, 5.03:1 on tint */
+  --primary-tint: #fdebe2; /* soft peach section background */
+  --accent: #f7b267; /* sunny peach, decoration only (never text) */
 }
 
 .dark {
-  --background: #0f172a; /* deep navy */
-  --foreground: #ffffff; /* 17.85:1 */
-  --muted: #94a3b8; /* 6.96:1 on background, 5.71:1 on surface */
-  --surface: #1e293b; /* cards */
-  --border: #334155;
+  --background: #211715; /* warm espresso */
+  --foreground: #fbefe8; /* 15.54:1 */
+  --muted: #c9b3a8; /* 8.76:1 on background, 7.86:1 on surface */
+  --surface: #2d201d; /* cards */
+  --border: #4a3530;
 
-  --primary: #19a7ce;
-  --primary-foreground: #0f172a; /* navy text on buttons, 6.34:1 */
-  /* #0B7A99 is only 3.62:1 on navy (fails), so links use the brand color in dark mode:
-     6.34:1 on background, 5.20:1 on surface, 5.54:1 on tint */
-  --primary-dark: #19a7ce;
-  --primary-tint: #10253a; /* 10% primary on navy */
+  --primary: #f2916f;
+  --primary-foreground: #2a1a15; /* dark text on buttons, 7.20:1 */
+  /* The light-mode link color is too dark here, so links use coral:
+     7.56:1 on background, 6.78:1 on surface, 6.23:1 on tint */
+  --primary-dark: #f2916f;
+  --primary-tint: #3a2420;
+  --accent: #e9a15a;
 }
 
 /* Expose the variables above as Tailwind classes: bg-primary, text-muted, border-border, etc. */
@@ -47,10 +49,13 @@
   --color-primary-foreground: var(--primary-foreground);
   --color-primary-dark: var(--primary-dark);
   --color-primary-tint: var(--primary-tint);
+  --color-accent: var(--accent);
 
-  /* Font variables come from next/font in app/layout.tsx */
-  --font-sans: var(--font-jakarta);
-  --font-mono: var(--font-jetbrains);
+  /* Font variables come from next/font in app/layout.tsx. There's no code on
+     this site, so "mono" labels use the same friendly rounded font. */
+  --font-sans: var(--font-nunito);
+  --font-mono: var(--font-nunito);
+  --font-display: var(--font-fraunces);
 }
 
 @layer base {
@@ -62,9 +67,16 @@
     @apply bg-background font-sans text-foreground antialiased;
   }
 
-  /* Visible keyboard focus everywhere */
+  /* Headings in a soft, rounded serif */
+  h1,
+  h2 {
+    @apply font-display font-semibold;
+    font-variation-settings: "SOFT" 100;
+  }
+
+  /* Visible keyboard focus everywhere (darker coral, so it shows on cream) */
   :focus-visible {
-    @apply outline-2 outline-offset-2 outline-primary;
+    @apply outline-2 outline-offset-2 outline-primary-dark;
   }
 }
 

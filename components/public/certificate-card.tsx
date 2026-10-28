@@ -39,7 +39,7 @@ export function CertificateCard({ certificate: c }: { certificate: Certificate }
   const expired = !!(today && c.expiry_date && c.expiry_date < today);
 
   return (
-    <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-surface transition hover:-translate-y-1 hover:border-primary hover:shadow-lg hover:shadow-primary/10">
+    <article className="flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-surface transition hover:-translate-y-1 hover:border-primary hover:shadow-lg hover:shadow-primary/10">
       {c.image_url ? (
         <button
           type="button"
@@ -79,7 +79,7 @@ export function CertificateCard({ certificate: c }: { certificate: Certificate }
         <dialog
           ref={dialogRef}
           aria-label={`${c.title} certificate`}
-          className="m-auto max-h-[92dvh] w-[calc(100%-2rem)] max-w-4xl overflow-y-auto rounded-2xl border border-border bg-surface p-0 text-foreground shadow-xl backdrop:bg-black/70"
+          className="m-auto max-h-[92dvh] w-[calc(100%-2rem)] max-w-4xl overflow-y-auto rounded-3xl border border-border bg-surface p-0 text-foreground shadow-xl backdrop:bg-black/70"
           // Click on the dimmed background closes it
           onClick={(e) => e.target === e.currentTarget && dialogRef.current?.close()}
         >
@@ -92,7 +92,7 @@ export function CertificateCard({ certificate: c }: { certificate: Certificate }
               type="button"
               onClick={() => dialogRef.current?.close()}
               aria-label="Close"
-              className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-muted hover:bg-primary-tint hover:text-foreground"
+              className="inline-flex size-9 shrink-0 items-center justify-center rounded-full text-muted hover:bg-primary-tint hover:text-foreground"
             >
               <X className="size-5" aria-hidden />
             </button>

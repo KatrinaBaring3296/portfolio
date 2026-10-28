@@ -37,7 +37,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
         <ArrowLeft className="size-4" aria-hidden /> Back to projects
       </Link>
 
-      <h1 className="mt-6 text-4xl font-bold tracking-tight text-balance sm:text-5xl">{project.title}</h1>
+      <h1 className="mt-6 text-4xl font-semibold text-balance sm:text-5xl">{project.title}</h1>
       <p className="mt-4 text-lg text-muted">{project.summary}</p>
 
       <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -75,7 +75,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
 
       {project.gallery.length > 0 && (
         <section aria-labelledby="gallery-title" className="mt-14">
-          <h2 id="gallery-title" className="text-2xl font-bold">
+          <h2 id="gallery-title" className="text-2xl font-semibold">
             Gallery
           </h2>
           <ul className="mt-6 grid gap-4 sm:grid-cols-2">
@@ -85,7 +85,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
                   src={url}
                   alt={`${project.title} screenshot ${i + 1}`}
                   sizes="(min-width: 640px) 420px, 100vw"
-                  className="aspect-video rounded-2xl border border-border"
+                  className="aspect-video rounded-3xl border border-border"
                 />
               </li>
             ))}
@@ -102,7 +102,7 @@ function ExternalButton({ href, children }: { href: string; children: React.Reac
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2.5 text-sm font-semibold transition hover:bg-primary-tint"
+      className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2.5 text-sm font-semibold transition hover:bg-primary-tint"
     >
       {children} <ExternalLink className="size-4" aria-hidden />
     </a>

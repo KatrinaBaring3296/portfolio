@@ -16,7 +16,7 @@ export function About({ settings, tinted }: { settings: SiteSettings; tinted: bo
           ))}
         </Reveal>
         <Reveal delay={100}>
-          <ul className="space-y-3 rounded-2xl border border-border bg-surface p-6 text-sm">
+          <ul className="space-y-3 rounded-3xl border border-border bg-surface p-6 text-sm">
             <li className="flex items-center gap-3">
               <MapPin className="size-5 text-primary" aria-hidden />
               Based in the Philippines (UTC+8)

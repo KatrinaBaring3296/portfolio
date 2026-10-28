@@ -6,11 +6,11 @@ import type { FocusProfile, SiteSettings } from "./types";
 
 export const OG_SIZE = { width: 1200, height: 630 };
 
-const NAVY = "#0f172a";
-const BRAND = "#19a7ce";
-const BRAND_DARK = "#0b7a99";
-const TINT = "#edf8fb";
-const MUTED = "#475569";
+const INK = "#3b2a24";
+const BRAND = "#f08a6c";
+const BRAND_DARK = "#ad4329";
+const TINT = "#fdebe2";
+const MUTED = "#6e5a51";
 
 const isPlaceholder = (text: string) => !text.trim() || /^\[.*\]$/.test(text.trim());
 
@@ -18,7 +18,7 @@ export function profileOgImage(settings: SiteSettings, profile: FocusProfile | n
   const headline = profile && !isPlaceholder(profile.headline) ? profile.headline : null;
 
   return new ImageResponse(
-    <div style={{ display: "flex", width: "100%", height: "100%", background: "white", color: NAVY }}>
+    <div style={{ display: "flex", width: "100%", height: "100%", background: "#fff8f1", color: INK }}>
       <div style={{ display: "flex", width: 24, height: "100%", background: BRAND }} />
       <div style={{ display: "flex", flex: 1, alignItems: "center", padding: "64px 72px", gap: 56 }}>
         <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>

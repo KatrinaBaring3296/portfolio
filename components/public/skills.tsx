@@ -46,7 +46,7 @@ export function Skills({ items, tinted }: { items: Skill[]; tinted: boolean }) {
             if (groupSkills.length === 0) return null;
             return (
               <Reveal key={key} delay={i * 100}>
-                <div className="h-full rounded-2xl border border-border bg-surface p-6">
+                <div className="h-full rounded-3xl border border-border bg-surface p-6">
                   <h3 className="flex items-center gap-2 font-semibold">
                     <Icon className="size-5 text-primary" aria-hidden />
                     {title}
@@ -79,11 +79,11 @@ function ToolTile({ name, logo }: { name: string; logo: Logo }) {
   return (
     <div
       style={{ "--brand": brand } as React.CSSProperties}
-      className="group flex h-full flex-col items-center gap-3 rounded-2xl border border-border bg-surface px-2 py-4 text-center transition duration-300 hover:-translate-y-1 hover:border-(--brand) hover:shadow-lg"
+      className="group flex h-full flex-col items-center gap-3 rounded-3xl border border-border bg-surface px-2 py-4 text-center transition duration-300 hover:-translate-y-1 hover:border-(--brand) hover:shadow-lg"
     >
       {/* Soft brand-tinted badge; in dark mode a light badge, like an app icon,
           so dark logos (C++, MySQL) stay visible in their real colors */}
-      <span className="logo-badge inline-flex size-14 items-center justify-center rounded-2xl bg-[color-mix(in_srgb,var(--brand)_12%,transparent)] transition-transform duration-300 group-hover:scale-110 dark:bg-slate-100">
+      <span className="logo-badge inline-flex size-14 items-center justify-center rounded-3xl bg-[color-mix(in_srgb,var(--brand)_12%,transparent)] transition-transform duration-300 group-hover:scale-110 dark:bg-stone-100">
         <SkillLogo logo={logo} className="size-8" />
       </span>
       <span className="text-xs leading-tight font-medium sm:text-sm">{name}</span>

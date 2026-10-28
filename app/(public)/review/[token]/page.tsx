@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 export default function ReviewPage({ params }: PageProps<"/review/[token]">) {
   return (
     <div className="mx-auto max-w-2xl px-4 py-12 sm:py-16">
-      <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-primary-tint" />}>
+      <Suspense fallback={<div className="h-96 animate-pulse rounded-3xl bg-primary-tint" />}>
         <ReviewContent params={params} />
       </Suspense>
     </div>
@@ -54,10 +54,10 @@ async function ReviewContent({ params }: { params: Promise<{ token: string }> })
           sizes="64px"
           variant="photo"
           placeholderLabel=""
-          className="size-16 shrink-0 rounded-2xl border border-border"
+          className="size-16 shrink-0 rounded-3xl border border-border"
         />
         <div>
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Hi {request.name.split(" ")[0]}!</h1>
+          <h1 className="text-2xl font-semibold sm:text-3xl">Hi {request.name.split(" ")[0]}!</h1>
           <p className="mt-1 text-muted">
             Thanks for taking a moment to write a testimonial for {settings.name}.
           </p>

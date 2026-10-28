@@ -25,10 +25,15 @@ export function Section({
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <Reveal>
-          <p className="font-mono text-xs font-medium tracking-widest text-primary-dark uppercase">
+          {/* Small pill label above each heading (white on peach sections, peach elsewhere) */}
+          <p
+            className={`inline-block rounded-full px-3 py-1 text-xs font-bold tracking-wider text-primary-dark uppercase ${
+              tinted ? "bg-surface" : "bg-primary-tint"
+            }`}
+          >
             {eyebrow}
           </p>
-          <h2 id={`${id}-title`} className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
+          <h2 id={`${id}-title`} className="mt-3 text-3xl font-semibold sm:text-4xl">
             {title}
           </h2>
           {intro && <p className="mt-3 max-w-2xl text-muted">{intro}</p>}

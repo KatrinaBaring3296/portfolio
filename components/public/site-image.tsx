@@ -3,7 +3,7 @@ import { ImagePlaceholder } from "./image-placeholder";
 
 // Shows an uploaded image (from Supabase Storage), or a placeholder when
 // there isn't one yet. The image fills the box, so size it with `className`
-// (e.g. "aspect-video rounded-2xl").
+// (e.g. "aspect-video rounded-3xl").
 export function SiteImage({
   src,
   alt,
