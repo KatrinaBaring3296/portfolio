@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, Nunito } from "next/font/google";
+import { Nunito, Playfair_Display } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SITE_URL } from "@/lib/seo";
 import "./globals.css";
@@ -10,11 +10,10 @@ const nunito = Nunito({
   subsets: ["latin"],
 });
 
-// Soft serif for headings (its "SOFT" setting rounds the letter edges)
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+// Elegant serif for headings
+const playfair = Playfair_Display({
+  variable: "--font-playfair",
   subsets: ["latin"],
-  axes: ["SOFT"],
 });
 
 // Site-wide defaults. Each public page sets its own title and description
@@ -34,7 +33,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     // suppressHydrationWarning: next-themes adds the "dark" class before React loads
-    <html lang="en" className={`${nunito.variable} ${fraunces.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${nunito.variable} ${playfair.variable}`} suppressHydrationWarning>
       <body className="min-h-dvh">
         <ThemeProvider>{children}</ThemeProvider>
       </body>

@@ -97,19 +97,19 @@ All colors live in [`app/globals.css`](app/globals.css) as CSS variables, expose
 like `bg-primary`, `text-primary-dark`, `bg-primary-tint`, `text-muted`. Each light/dark pair is commented
 with its WCAG contrast ratio.
 
-| Token                | Light     | Dark      | Use                                    |
-| -------------------- | --------- | --------- | -------------------------------------- |
-| `background`         | `#FFF8F1` | `#211715` | Page background (cream / espresso)     |
-| `surface`            | `#FFFFFF` | `#2D201D` | Cards                                  |
-| `foreground`         | `#3B2A24` | `#FBEFE8` | Body text                              |
-| `muted`              | `#6E5A51` | `#C9B3A8` | Secondary text                         |
-| `primary`            | `#F08A6C` | `#F2916F` | Coral: buttons, icons, borders, badges |
-| `primary-foreground` | `#3B2A24` | `#2A1A15` | Text on primary backgrounds            |
-| `primary-dark`       | `#AD4329` | `#F2916F` | Links and small brand-colored text     |
-| `primary-tint`       | `#FDEBE2` | `#3A2420` | Soft peach sections, hover states      |
-| `accent`             | `#F7B267` | `#E9A15A` | Sunny peach, decoration only           |
+| Token                | Light     | Dark      | Use                              |
+| -------------------- | --------- | --------- | -------------------------------- |
+| `background`         | `#FFFAFC` | `#1F1419` | Page background                  |
+| `surface`            | `#FFFFFF` | `#2B1C23` | Cards                            |
+| `foreground`         | `#3A2230` | `#FCEDF3` | Body text (deep plum)            |
+| `muted`              | `#76586A` | `#D0B3C1` | Secondary text                   |
+| `primary`            | `#CF336F` | `#F27AAE` | Pink: buttons, hero band, icons  |
+| `primary-foreground` | `#FFFFFF` | `#1F1419` | Text on primary backgrounds      |
+| `primary-dark`       | `#C92D6B` | `#F27AAE` | Headings, links, small pink text |
+| `primary-tint`       | `#FDEEF4` | `#3A1F2C` | Soft pink sections, hover states |
+| `accent`             | `#F48FB9` | `#B85483` | Light pink, decoration only      |
 
-Fonts: **Fraunces** (soft serif headings, `font-display`) and **Nunito** (rounded body text, `font-sans`).
+Fonts: **Playfair Display** (pink serif headings, `font-display`) and **Nunito** (rounded body text, `font-sans`).
 
 ## Environment variables
 
@@ -121,6 +121,6 @@ See [`.env.local.example`](.env.local.example). Real values go in `.env.local`, 
 Copied from a working portfolio (same features and architecture), then:
 
 - [x] A. Copy and clean: owner content removed, one setup file, teaching/VA starting content
-- [x] B. Warm & friendly design (coral/peach + cream)
+- [x] B. Pink design (white + pink, serif headings, arch photo, pink hero band)
 - [ ] C. Accounts and deploy: GitHub, Supabase, Vercel, Resend
 - [ ] D. Real content, filled in through the admin panel

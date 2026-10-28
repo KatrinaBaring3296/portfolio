@@ -30,18 +30,23 @@ export function Services({
       intro="Pick a category to see what's included."
       tinted={tinted}
     >
-      <div role="group" aria-label="Filter services" className="flex flex-wrap gap-2">
-        <FilterChip active={selected === "all"} onClick={() => setSelected("all")}>
-          All
-        </FilterChip>
+      {/* A row of round category icons; tapping one shows only its services */}
+      <div
+        role="group"
+        aria-label="Filter services"
+        className="flex flex-wrap justify-center gap-x-6 gap-y-8 sm:gap-x-10"
+      >
+        <FilterCircle icon="Layers" active={selected === "all"} onClick={() => setSelected("all")}>
+          Everything
+        </FilterCircle>
         {categories.map((c) => (
-          <FilterChip key={c.id} active={selected === c.id} onClick={() => setSelected(c.id)}>
+          <FilterCircle key={c.id} icon={c.icon} active={selected === c.id} onClick={() => setSelected(c.id)}>
             {c.name}
-          </FilterChip>
+          </FilterCircle>
         ))}
       </div>
 
-      <div className="mt-10 space-y-12">
+      <div className="mt-14 space-y-12">
         {visibleCategories.map((category) => {
           const items = services.filter((s) => s.category_id === category.id);
           if (items.length === 0) return null;
@@ -49,7 +54,7 @@ export function Services({
             <div key={category.id}>
               <div className="flex flex-wrap items-center gap-3">
                 <Icon name={category.icon} className="size-5 text-primary" />
-                <h3 className="text-lg font-semibold">{category.name}</h3>
+                <h3 className="font-display text-xl font-bold">{category.name}</h3>
                 {category.status === "coming_soon" && <ComingSoonBadge />}
               </div>
               <p className="mt-1 text-sm text-muted">{category.description}</p>
@@ -87,11 +92,13 @@ export function Services({
   );
 }
 
-function FilterChip({
+function FilterCircle({
+  icon,
   active,
   onClick,
   children,
 }: {
+  icon: string;
   active: boolean;
   onClick: () => void;
   children: React.ReactNode;
@@ -101,13 +108,20 @@ function FilterChip({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
-        active
-          ? "border-primary bg-primary text-primary-foreground"
-          : "border-border bg-surface hover:border-primary"
-      }`}
+      className="group flex w-28 flex-col items-center gap-3 text-center"
     >
-      {children}
+      <span
+        className={`inline-flex size-20 items-center justify-center rounded-full border-2 transition duration-300 group-hover:-translate-y-1 ${
+          active
+            ? "border-primary bg-primary text-primary-foreground shadow-lg shadow-primary/30"
+            : "border-border bg-surface text-primary-dark group-hover:border-primary"
+        }`}
+      >
+        <Icon name={icon} className="size-9 stroke-[1.5]" />
+      </span>
+      <span className={`font-display text-sm leading-tight font-bold ${active ? "text-primary-dark" : ""}`}>
+        {children}
+      </span>
     </button>
   );
 }

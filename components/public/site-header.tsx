@@ -28,7 +28,7 @@ export function SiteHeader({ name }: { name: string }) {
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <Link
           href={onHomepage ? pathname : "/"}
-          className="inline-flex items-center gap-2 font-display text-lg font-semibold [font-variation-settings:'SOFT'_100]"
+          className="inline-flex items-center gap-2 font-display text-xl font-bold text-primary-dark"
         >
           <span className="size-2.5 rounded-full bg-primary" aria-hidden />
           {name}

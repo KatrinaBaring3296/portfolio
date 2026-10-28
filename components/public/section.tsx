@@ -1,3 +1,4 @@
+import { Flower2 } from "lucide-react";
 import { Reveal } from "./reveal";
 
 // Shared wrapper for homepage sections: anchor id, spacing, and heading.
@@ -24,21 +25,20 @@ export function Section({
       className={`scroll-mt-20 py-20 sm:py-24 ${tinted ? "bg-primary-tint" : ""}`}
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <Reveal>
-          {/* Small pill label above each heading (white on peach sections, peach elsewhere) */}
-          <p
-            className={`inline-block rounded-full px-3 py-1 text-xs font-bold tracking-wider text-primary-dark uppercase ${
-              tinted ? "bg-surface" : "bg-primary-tint"
-            }`}
-          >
-            {eyebrow}
-          </p>
-          <h2 id={`${id}-title`} className="mt-3 text-3xl font-semibold sm:text-4xl">
+        {/* Centered heading: small label, pink serif title, then a little flower divider */}
+        <Reveal className="text-center">
+          <p className="text-xs font-bold tracking-[0.2em] text-muted uppercase">{eyebrow}</p>
+          <h2 id={`${id}-title`} className="mt-2 text-3xl sm:text-4xl">
             {title}
           </h2>
-          {intro && <p className="mt-3 max-w-2xl text-muted">{intro}</p>}
+          <div className="mt-4 flex items-center justify-center gap-3 text-accent" aria-hidden>
+            <span className="h-px w-12 bg-accent" />
+            <Flower2 className="size-5" />
+            <span className="h-px w-12 bg-accent" />
+          </div>
+          {intro && <p className="mx-auto mt-4 max-w-2xl text-muted">{intro}</p>}
         </Reveal>
-        <div className="mt-10">{children}</div>
+        <div className="mt-12">{children}</div>
       </div>
     </section>
   );

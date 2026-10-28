@@ -9,33 +9,33 @@
  * Ratios are noted next to each value so you can re-check if you edit them.
  */
 :root {
-  --background: #fff8f1; /* warm cream */
-  --foreground: #3b2a24; /* cocoa brown, 12.93:1 on background */
-  --muted: #6e5a51; /* secondary text, 6.15:1 on background, 5.60:1 on tint */
+  --background: #fffafc; /* barely-pink white */
+  --foreground: #3a2230; /* deep plum, 14.01:1 on background */
+  --muted: #76586a; /* secondary text, 6.03:1 on background, 5.55:1 on tint */
   --surface: #ffffff; /* cards */
-  --border: #f0dccf;
+  --border: #f6d9e5;
 
-  --primary: #f08a6c; /* coral: buttons, icons, borders, badges */
-  --primary-foreground: #3b2a24; /* text ON coral, 5.55:1 (white would fail) */
-  --primary-dark: #ad4329; /* links + small brand text: 5.52:1 on cream, 5.03:1 on tint */
-  --primary-tint: #fdebe2; /* soft peach section background */
-  --accent: #f7b267; /* sunny peach, decoration only (never text) */
+  --primary: #cf336f; /* pink: buttons, the hero band, icons, borders */
+  --primary-foreground: #ffffff; /* white text ON pink, 4.82:1 */
+  --primary-dark: #c92d6b; /* links, headings, small pink text: 4.99:1 on background, 4.60:1 on tint */
+  --primary-tint: #fdeef4; /* soft pink section background */
+  --accent: #f48fb9; /* light pink, decoration only (never text) */
 }
 
 .dark {
-  --background: #211715; /* warm espresso */
-  --foreground: #fbefe8; /* 15.54:1 */
-  --muted: #c9b3a8; /* 8.76:1 on background, 7.86:1 on surface */
-  --surface: #2d201d; /* cards */
-  --border: #4a3530;
+  --background: #1f1419; /* very dark plum */
+  --foreground: #fcedf3; /* 15.82:1 */
+  --muted: #d0b3c1; /* 9.30:1 on background, 8.43:1 on surface */
+  --surface: #2b1c23; /* cards */
+  --border: #4a2c3a;
 
-  --primary: #f2916f;
-  --primary-foreground: #2a1a15; /* dark text on buttons, 7.20:1 */
-  /* The light-mode link color is too dark here, so links use coral:
-     7.56:1 on background, 6.78:1 on surface, 6.23:1 on tint */
-  --primary-dark: #f2916f;
-  --primary-tint: #3a2420;
-  --accent: #e9a15a;
+  --primary: #f27aae; /* soft rose */
+  --primary-foreground: #1f1419; /* dark text on rose buttons, 6.97:1 */
+  /* The light-mode pink is too dark here, so links and headings use the rose:
+     6.97:1 on background, 6.32:1 on surface, 5.79:1 on tint */
+  --primary-dark: #f27aae;
+  --primary-tint: #3a1f2c;
+  --accent: #b85483;
 }
 
 /* Expose the variables above as Tailwind classes: bg-primary, text-muted, border-border, etc. */
@@ -55,7 +55,7 @@
      this site, so "mono" labels use the same friendly rounded font. */
   --font-sans: var(--font-nunito);
   --font-mono: var(--font-nunito);
-  --font-display: var(--font-fraunces);
+  --font-display: var(--font-playfair);
 }
 
 @layer base {
@@ -67,14 +67,13 @@
     @apply bg-background font-sans text-foreground antialiased;
   }
 
-  /* Headings in a soft, rounded serif */
+  /* Big headings in an elegant pink serif */
   h1,
   h2 {
-    @apply font-display font-semibold;
-    font-variation-settings: "SOFT" 100;
+    @apply font-display font-bold text-primary-dark;
   }
 
-  /* Visible keyboard focus everywhere (darker coral, so it shows on cream) */
+  /* Visible keyboard focus everywhere (the darker pink, so it shows on white) */
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-primary-dark;
   }

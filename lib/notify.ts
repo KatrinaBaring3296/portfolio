@@ -38,13 +38,13 @@ async function emailAdmin(email: {
       subject: email.subject,
       text: `${email.heading}\n${email.from}\n\n${email.body}\n\n${email.footer} ${email.link.url}`,
       html: `
-        <div style="font-family:system-ui,sans-serif;font-size:15px;color:#3b2a24;max-width:560px">
-          <p style="margin:0 0 4px;color:#ad4329;font-weight:600">${escapeHtml(email.heading)}</p>
+        <div style="font-family:system-ui,sans-serif;font-size:15px;color:#3a2230;max-width:560px">
+          <p style="margin:0 0 4px;color:#c92d6b;font-weight:600">${escapeHtml(email.heading)}</p>
           <p style="margin:0 0 16px"><strong>${escapeHtml(email.from)}</strong></p>
-          <div style="white-space:pre-wrap;border-left:4px solid #f08a6c;padding:8px 14px;background:#fdebe2">${escapeHtml(email.body)}</div>
-          <p style="margin:16px 0 0;color:#6e5a51;font-size:13px">
+          <div style="white-space:pre-wrap;border-left:4px solid #cf336f;padding:8px 14px;background:#fdeef4">${escapeHtml(email.body)}</div>
+          <p style="margin:16px 0 0;color:#76586a;font-size:13px">
             ${escapeHtml(email.footer)}
-            <a href="${email.link.url}" style="color:#ad4329">${escapeHtml(email.link.label)}</a>.
+            <a href="${email.link.url}" style="color:#c92d6b">${escapeHtml(email.link.label)}</a>.
           </p>
         </div>`,
     }),

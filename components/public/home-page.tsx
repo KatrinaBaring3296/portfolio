@@ -32,7 +32,7 @@ export async function HomePage({ profile }: { profile: FocusProfile }) {
 
   return (
     <>
-      <Hero settings={settings} profile={profile} />
+      <Hero settings={settings} profile={profile} highlights={content.categories.slice(0, 3)} />
       {sections.map((key, i) => {
         const tinted = i % 2 === 0; // every other section gets the soft background
         switch (key) {
