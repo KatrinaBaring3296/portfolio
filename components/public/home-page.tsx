@@ -7,6 +7,7 @@ import { Experience } from "./experience";
 import { Faq } from "./faq";
 import { Hero } from "./hero";
 import { Projects } from "./projects";
+import { Samples } from "./samples";
 import { Services } from "./services";
 import { Skills } from "./skills";
 import { Testimonials } from "./testimonials";
@@ -21,6 +22,7 @@ export async function HomePage({ profile }: { profile: FocusProfile }) {
     about: settings.about.trim() !== "",
     services: content.services.length > 0,
     experience: content.experience.length > 0,
+    samples: content.samples.length > 0,
     projects: content.projects.length > 0,
     skills: content.skills.length > 0,
     certifications: content.certificates.length > 0,
@@ -49,6 +51,8 @@ export async function HomePage({ profile }: { profile: FocusProfile }) {
             );
           case "experience":
             return <Experience key={key} items={content.experience} tinted={tinted} />;
+          case "samples":
+            return <Samples key={key} items={content.samples} tinted={tinted} />;
           case "projects":
             return <Projects key={key} items={content.projects} tinted={tinted} />;
           case "skills":

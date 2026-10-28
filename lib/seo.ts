@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import type { FocusProfile, Project, SiteSettings } from "./types";
+import type { FocusProfile, Project, SiteSettings, WorkSample } from "./types";
 
 // Search-engine and link-preview info (what Google, LinkedIn, Messenger,
 // etc. show for your links).
@@ -38,6 +38,23 @@ export function projectMetadata(project: Project, settings: SiteSettings): Metad
   const description = isPlaceholder(project.summary) ? `A project by ${settings.name}.` : project.summary;
   const url = `/projects/${project.slug}`;
   const images = project.cover_image ? [{ url: project.cover_image, alt: project.title }] : undefined;
+
+  return {
+    title: { absolute: title },
+    description,
+    alternates: { canonical: url },
+    openGraph: { type: "article", title, description, url, siteName: settings.name, images },
+    twitter: { card: images ? "summary_large_image" : "summary", title, description },
+  };
+}
+
+/** Metadata for a sample work page. */
+export function sampleMetadata(sample: WorkSample, settings: SiteSettings): Metadata {
+  const title = `${sample.title} | ${settings.name}`;
+  const description = isPlaceholder(sample.summary) ? `A work sample by ${settings.name}.` : sample.summary;
+  const url = `/samples/${sample.slug}`;
+  const cover = sample.items.find((item) => item.kind === "image");
+  const images = cover ? [{ url: cover.url, alt: sample.title }] : undefined;
 
   return {
     title: { absolute: title },

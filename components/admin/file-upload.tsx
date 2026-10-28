@@ -26,7 +26,7 @@ export function FileUpload({
   bucket: "images" | "resumes";
   folder: string; // e.g. "profile", "projects"
   value: string | null;
-  onChange: (url: string | null) => void;
+  onChange: (url: string | null, file?: File) => void; // file: what was picked (for its name)
   label?: string;
   // Optional step before upload, e.g. watermarking a certificate
   transform?: (file: File) => Promise<File>;
@@ -77,7 +77,7 @@ export function FileUpload({
       toast(`Upload failed: ${error.message}`, "error");
       return;
     }
-    onChange(supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl);
+    onChange(supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl, picked);
     toast("Uploaded. Click Save to keep it.");
   }
 

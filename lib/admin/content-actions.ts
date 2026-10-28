@@ -8,6 +8,7 @@ import {
   type ExperienceCategory,
   experienceProof,
   type ProofItem,
+  type SampleItem,
   type SkillGroup,
   type Status,
 } from "@/lib/types";
@@ -360,6 +361,87 @@ export async function saveFaq(input: FaqInput): Promise<ActionResult> {
 
   contentChanged();
   return ok(input.id ? "Question saved." : "Question added.");
+}
+
+// ---- Sample Work ----
+
+export type SampleInput = {
+  id?: string;
+  title: string;
+  slug: string;
+  summary: string;
+  description: string;
+  tools: string[];
+  items: SampleItem[]; // photos and PDFs, in display order
+  status: Status;
+  show_for: string[];
+};
+
+const MAX_SAMPLE_ITEMS = 30;
+// Photos are stored in the "images" bucket, PDFs in "resumes"
+const bucketFor = (kind: SampleItem["kind"]) => (kind === "pdf" ? "resumes" : "images");
+
+export async function saveSample(input: SampleInput): Promise<ActionResult> {
+  const { supabase } = await requireAdmin();
+  const problem = checkCommon(input);
+  if (problem) return fail(problem);
+
+  const title = input.title.trim();
+  const slug = input.slug.trim() || slugify(title);
+  const tools = [...new Set(input.tools.map((t) => t.trim()).filter(Boolean))];
+  const items: SampleItem[] = input.items.map((item) => ({
+    url: item.url,
+    kind: item.kind === "pdf" ? "pdf" : "image",
+    name: (item.name ?? "").trim().slice(0, 200),
+    caption: (item.caption ?? "").trim(),
+  }));
+
+  if (!title || title.length > 120) return fail("Title is required (120 characters max).");
+  if (!SLUG_PATTERN.test(slug)) return fail("URL name can only use lowercase letters, numbers, and dashes.");
+  if (input.summary.length > 300) return fail("Summary is too long (300 max).");
+  if (input.description.length > 20000) return fail("Description is too long (20,000 max).");
+  if (tools.length > 20 || tools.some((t) => t.length > 40))
+    return fail("Up to 20 tools, 40 characters each.");
+  if (items.length > MAX_SAMPLE_ITEMS) return fail(`Up to ${MAX_SAMPLE_ITEMS} photos and PDFs per sample.`);
+  if (!items.every((item) => isOwnFileUrl(item.url, bucketFor(item.kind)))) {
+    return fail("Photos and PDFs must be uploaded here.");
+  }
+  if (items.some((item) => item.caption.length > 1000))
+    return fail("Keep each description under 1000 characters.");
+
+  // Remember the old files so we can delete ones that were removed
+  const { data: before } = input.id
+    ? await supabase.from("work_samples").select("items").eq("id", input.id).single()
+    : { data: null };
+
+  const { error } = await upsert(supabase, "work_samples", input.id, {
+    title,
+    slug,
+    summary: input.summary.trim(),
+    description: input.description.trim(),
+    tools,
+    items,
+    status: input.status,
+    show_for: input.show_for,
+  });
+  if (error) {
+    if (error.code === "42P01" || error.code === "PGRST205") {
+      return fail(
+        "The Sample Work table doesn't exist yet. Run supabase/updates/0010_work_samples.sql first.",
+      );
+    }
+    if (error.code === "23505") return fail(`Another sample already uses the URL /samples/${slug}.`);
+    return dbError("save the sample", error);
+  }
+
+  if (before) {
+    const keep = new Set(items.map((item) => item.url));
+    const removed = ((before.items as SampleItem[]) ?? []).filter((item) => !keep.has(item.url));
+    await Promise.all(removed.map((item) => removeFile(supabase, item.url, bucketFor(item.kind))));
+  }
+
+  contentChanged();
+  return ok(input.id ? "Sample saved." : "Sample added.");
 }
 
 // ---- Testimonials ----

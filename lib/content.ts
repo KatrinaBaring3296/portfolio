@@ -12,6 +12,7 @@ import type {
   Skill,
   Status,
   Testimonial,
+  WorkSample,
 } from "./types";
 
 // Functions the pages call to get their content.
@@ -40,9 +41,10 @@ async function loadContent() {
       supabase.from("skills").select("*").order("sort_order"),
       supabase.from("testimonials").select("*").order("sort_order"),
     ]);
-  const [certificates, faqs] = await Promise.all([
+  const [certificates, faqs, samples] = await Promise.all([
     loadAddedLater<Certificate>(supabase, "certificates"),
     loadAddedLater<Faq>(supabase, "faqs"),
+    loadAddedLater<WorkSample>(supabase, "work_samples"),
   ]);
 
   const firstError = [
@@ -73,10 +75,11 @@ async function loadContent() {
     testimonials: (testimonials.data ?? []) as Testimonial[],
     certificates,
     faqs,
+    samples,
   };
 }
 
-// Tables added after launch (certificates: migration 0002, faqs: 0009).
+// Tables added after launch (certificates: migration 0002, faqs: 0009, work_samples: 0010).
 // If that SQL hasn't been run yet, show nothing instead of breaking the site.
 async function loadAddedLater<T>(supabase: ReturnType<typeof createPublicClient>, table: string) {
   const { data, error } = await supabase.from(table).select("*").order("sort_order");
@@ -137,6 +140,7 @@ export async function getHomeContent(profile: FocusProfile) {
     testimonials: data.testimonials.filter(isPublic),
     certificates: data.certificates.filter((c) => isPublic(c) && isForProfile(c, profile.id)),
     faqs: data.faqs.filter((f) => isPublic(f) && isForProfile(f, profile.id)),
+    samples: data.samples.filter((s) => isPublic(s) && isForProfile(s, profile.id)),
   };
 }
 
@@ -148,4 +152,14 @@ export async function getProject(slug: string) {
 export async function getProjectSlugs() {
   const { projects } = await loadContent();
   return projects.filter(isPublic).map((p) => p.slug);
+}
+
+export async function getSample(slug: string) {
+  const { samples } = await loadContent();
+  return samples.find((s) => s.slug === slug && isPublic(s)) ?? null;
+}
+
+export async function getSampleSlugs() {
+  const { samples } = await loadContent();
+  return samples.filter(isPublic).map((s) => s.slug);
 }

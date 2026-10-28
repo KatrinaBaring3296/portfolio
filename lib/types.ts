@@ -9,6 +9,7 @@ export type SectionKey =
   | "about"
   | "services"
   | "experience"
+  | "samples"
   | "projects"
   | "skills"
   | "certifications"
@@ -21,6 +22,7 @@ export const ALL_SECTIONS: SectionKey[] = [
   "about",
   "services",
   "experience",
+  "samples",
   "projects",
   "skills",
   "certifications",
@@ -137,6 +139,39 @@ export type Project = {
   show_for: string[]; // profile IDs; empty = every profile
   sort_order: number;
 };
+
+// One photo or PDF in a work sample, with its own description (migration 0010)
+export type SampleItem = {
+  url: string;
+  kind: "image" | "pdf";
+  name: string; // original file name, shown for PDFs
+  caption: string;
+};
+
+export type WorkSample = {
+  id: string;
+  slug: string;
+  title: string;
+  summary: string; // one sentence for the card
+  description: string; // main description, markdown
+  tools: string[];
+  items: SampleItem[];
+  status: Status;
+  show_for: string[]; // profile IDs; empty = every profile
+  sort_order: number;
+};
+
+/** "3 photos · 1 PDF", or "" when there are none. */
+export function sampleItemCount(items: SampleItem[]) {
+  const photos = items.filter((i) => i.kind === "image").length;
+  const pdfs = items.length - photos;
+  return [
+    photos && `${photos} photo${photos === 1 ? "" : "s"}`,
+    pdfs && `${pdfs} PDF${pdfs === 1 ? "" : "s"}`,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+}
 
 export type ExperienceCategory = "va" | "teaching" | "business";
 

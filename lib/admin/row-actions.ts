@@ -16,6 +16,7 @@ const TABLES = [
   "testimonials",
   "certificates",
   "faqs",
+  "work_samples",
 ] as const;
 export type ContentTable = (typeof TABLES)[number];
 
@@ -64,6 +65,12 @@ const FILE_COLUMNS: Partial<Record<ContentTable, { column: string; bucket: Bucke
     { column: "gallery", bucket: "images" },
   ],
   certificates: [{ column: "image_url", bucket: "images" }],
+  // Each sample item is a photo (images bucket) or a PDF (resumes bucket);
+  // removeFile skips URLs from the other bucket, so listing both is safe.
+  work_samples: [
+    { column: "items", bucket: "images" },
+    { column: "items", bucket: "resumes" },
+  ],
   skills: [{ column: "logo_url", bucket: "images" }],
   experience: [
     { column: "proof", bucket: "images" },
@@ -72,7 +79,7 @@ const FILE_COLUMNS: Partial<Record<ContentTable, { column: string; bucket: Bucke
 };
 
 // A file column can hold one URL, a list of URLs (a gallery), or a list of
-// { url, caption } items (experience proof). Returns every URL in it.
+// { url, caption } items (experience proof, sample items). Returns every URL in it.
 function urlsIn(value: unknown): (string | null)[] {
   if (!Array.isArray(value)) return [typeof value === "string" ? value : null];
   return value.map((item) =>

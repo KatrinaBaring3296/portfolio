@@ -59,10 +59,7 @@ export function Hero({
             </span>
             <span className="text-muted">{profile.label}</span>
           </p>
-          <h1
-            id="hero-title"
-            className="mt-3 text-4xl leading-tight text-balance lg:text-5xl"
-          >
+          <h1 id="hero-title" className="mt-3 text-4xl leading-tight text-balance lg:text-5xl">
             {profile.headline}
           </h1>
           <p className="mt-5 max-w-xl text-lg text-pretty text-muted">{profile.pitch}</p>

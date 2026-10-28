@@ -14,7 +14,7 @@ export function Projects({ items, tinted }: { items: Project[]; tinted: boolean 
   const others = items.filter((p) => p !== featured);
 
   return (
-    <Section id="projects" eyebrow="Work samples" title="Things I've made" tinted={tinted}>
+    <Section id="projects" eyebrow="Projects" title="Things I've made" tinted={tinted}>
       {featured && (
         <Reveal>
           <Link
