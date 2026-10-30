@@ -180,6 +180,43 @@
   fill: var(--logo-light);
 }
 
+/* Hero entrance (components/public/hero.tsx): on page load, each part slides
+   up and fades in, one after another (--i = place in line). CSS only, so it
+   starts on first paint without waiting for JavaScript. The headline and
+   pitch only slide (no fade): the browser counts text as "loaded" only once
+   it's fully visible, so fading them would make the page score as slower.
+   The photo zooms in slightly. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-in {
+    animation: hero-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(var(--i, 0) * 90ms);
+  }
+  .hero-in-text {
+    animation-name: hero-in-text;
+  }
+  .hero-in-photo {
+    animation-name: hero-in-photo;
+    animation-duration: 0.9s;
+  }
+}
+@keyframes hero-in {
+  from {
+    opacity: 0.01;
+    transform: translateY(18px);
+  }
+}
+@keyframes hero-in-text {
+  from {
+    transform: translateY(18px);
+  }
+}
+@keyframes hero-in-photo {
+  from {
+    opacity: 0.01;
+    transform: translateY(12px) scale(0.96);
+  }
+}
+
 /* Thin brand-color bar at the top that fills as you scroll down the page.
    Uses the browser's scroll-driven animations (no JavaScript). Browsers
    without support simply don't show it. */
