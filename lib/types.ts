@@ -153,6 +153,7 @@ export type WorkSample = {
   slug: string;
   title: string;
   summary: string; // one sentence for the card
+  result?: string; // one-line outcome shown first (migration 0011; missing until it's run)
   description: string; // main description, markdown
   tools: string[];
   items: SampleItem[];

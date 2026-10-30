@@ -370,6 +370,7 @@ export type SampleInput = {
   title: string;
   slug: string;
   summary: string;
+  result: string;
   description: string;
   tools: string[];
   items: SampleItem[]; // photos and PDFs, in display order
@@ -399,6 +400,7 @@ export async function saveSample(input: SampleInput): Promise<ActionResult> {
   if (!title || title.length > 120) return fail("Title is required (120 characters max).");
   if (!SLUG_PATTERN.test(slug)) return fail("URL name can only use lowercase letters, numbers, and dashes.");
   if (input.summary.length > 300) return fail("Summary is too long (300 max).");
+  if (input.result.trim().length > 160) return fail("Result is too long (160 max).");
   if (input.description.length > 20000) return fail("Description is too long (20,000 max).");
   if (tools.length > 20 || tools.some((t) => t.length > 40))
     return fail("Up to 20 tools, 40 characters each.");
@@ -418,6 +420,7 @@ export async function saveSample(input: SampleInput): Promise<ActionResult> {
     title,
     slug,
     summary: input.summary.trim(),
+    result: input.result.trim(),
     description: input.description.trim(),
     tools,
     items,
@@ -428,6 +431,11 @@ export async function saveSample(input: SampleInput): Promise<ActionResult> {
     if (error.code === "42P01" || error.code === "PGRST205") {
       return fail(
         "The Sample Work table doesn't exist yet. Run supabase/updates/0010_work_samples.sql first.",
+      );
+    }
+    if (error.code === "PGRST204" && error.message.includes("result")) {
+      return fail(
+        "The Result field needs a one-time setup. Run supabase/updates/0011_sample_results.sql first.",
       );
     }
     if (error.code === "23505") return fail(`Another sample already uses the URL /samples/${slug}.`);

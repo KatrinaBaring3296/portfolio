@@ -895,3 +895,8 @@ where not (p.section_order ? 'samples');
 
 alter table public.focus_profiles alter column section_order
   set default '["about","services","experience","samples","projects","skills","certifications","testimonials","faq","contact"]';
+
+
+-- A one-line result for each work sample (update 0011)
+alter table public.work_samples
+  add column result text not null default '' check (char_length(result) <= 160);

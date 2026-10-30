@@ -18,6 +18,7 @@ const EMPTY: SampleInput = {
   title: "",
   slug: "",
   summary: "",
+  result: "",
   description: "",
   tools: [],
   items: [],
@@ -30,6 +31,7 @@ const toInput = (s: WorkSample): SampleInput => ({
   title: s.title,
   slug: s.slug,
   summary: s.summary,
+  result: s.result ?? "",
   description: s.description,
   tools: s.tools,
   items: s.items,
@@ -205,6 +207,20 @@ function SampleForm({
           </div>
         </Field>
       </div>
+
+      <Field
+        label="Result"
+        htmlFor="sa-result"
+        hint="The outcome, shown first on the card and page. Use real numbers only, e.g. Cut weekly reporting from 3 hours to 20 minutes."
+      >
+        <input
+          id="sa-result"
+          maxLength={160}
+          value={form.result}
+          onChange={(e) => set("result", e.target.value)}
+          className={inputClass}
+        />
+      </Field>
 
       <Field label="Summary" htmlFor="sa-summary" hint="One sentence for the sample card.">
         <input

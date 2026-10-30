@@ -1,4 +1,4 @@
-import { ArrowLeft, ExternalLink, FileText, Maximize2 } from "lucide-react";
+import { ArrowLeft, ExternalLink, FileText, Maximize2, TrendingUp } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -39,6 +39,17 @@ export default async function SamplePage({ params }: PageProps<"/samples/[slug]"
       </Link>
 
       <h1 className="mt-6 text-4xl text-balance sm:text-5xl">{sample.title}</h1>
+      {sample.result && (
+        <div className="mt-6 flex max-w-3xl gap-3 rounded-2xl border border-primary/30 bg-primary-tint p-4">
+          <TrendingUp className="mt-0.5 size-5 shrink-0 text-primary-dark" aria-hidden />
+          <p>
+            <span className="block text-xs font-bold tracking-widest text-primary-dark uppercase">
+              Result
+            </span>
+            <span className="mt-1 block text-lg font-semibold">{sample.result}</span>
+          </p>
+        </div>
+      )}
       {sample.summary && <p className="mt-4 text-lg text-muted">{sample.summary}</p>}
       {sample.tools.length > 0 && (
         <ul className="mt-5 flex flex-wrap gap-2" aria-label="Tools used">
@@ -120,7 +131,7 @@ function PdfItem({ item }: { item: SampleItem }) {
         src={`${item.url}#view=FitH`}
         title={item.name || "PDF sample"}
         loading="lazy"
-        className="hidden h-[32rem] w-full bg-primary-tint md:block"
+        className="hidden h-128 w-full bg-primary-tint md:block"
       />
       <div className="flex flex-wrap items-center justify-between gap-3 p-4">
         <span className="inline-flex min-w-0 items-center gap-2 text-sm font-medium">

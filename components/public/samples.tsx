@@ -1,4 +1,4 @@
-import { ArrowRight, FileText } from "lucide-react";
+import { ArrowRight, FileText, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { sampleItemCount, type WorkSample } from "@/lib/types";
 import { TechTag } from "./badges";
@@ -39,6 +39,15 @@ export function Samples({ items, tinted }: { items: WorkSample[]; tinted: boolea
                   )}
                   <div className="flex flex-1 flex-col p-5">
                     <h3 className="font-semibold">{sample.title}</h3>
+                    {sample.result && (
+                      <p className="mt-2 flex gap-1.5 text-sm font-semibold text-primary-dark">
+                        <TrendingUp className="mt-0.5 size-4 shrink-0" aria-hidden />
+                        <span>
+                          <span className="sr-only">Result: </span>
+                          {sample.result}
+                        </span>
+                      </p>
+                    )}
                     {sample.summary && <p className="mt-1 text-sm text-muted">{sample.summary}</p>}
                     {sample.tools.length > 0 && (
                       <ul className="mt-4 flex flex-wrap gap-2" aria-label="Tools used">
