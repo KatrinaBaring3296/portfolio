@@ -3,6 +3,7 @@ import { completeSectionOrder, type FocusProfile, type SectionKey } from "@/lib/
 import { About } from "./about";
 import { Certifications } from "./certifications";
 import { Contact } from "./contact";
+import { Education } from "./education";
 import { Experience } from "./experience";
 import { Faq } from "./faq";
 import { Hero } from "./hero";
@@ -25,6 +26,7 @@ export async function HomePage({ profile }: { profile: FocusProfile }) {
     samples: content.samples.length > 0,
     projects: content.projects.length > 0,
     skills: content.skills.length > 0,
+    education: content.education.length > 0,
     certifications: content.certificates.length > 0,
     testimonials: content.testimonials.length > 0,
     faq: content.faqs.length > 0,
@@ -57,6 +59,8 @@ export async function HomePage({ profile }: { profile: FocusProfile }) {
             return <Projects key={key} items={content.projects} tinted={tinted} />;
           case "skills":
             return <Skills key={key} items={content.skills} tinted={tinted} />;
+          case "education":
+            return <Education key={key} items={content.education} tinted={tinted} />;
           case "certifications":
             return <Certifications key={key} items={content.certificates} tinted={tinted} />;
           case "testimonials":

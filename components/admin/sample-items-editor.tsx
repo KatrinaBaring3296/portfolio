@@ -8,18 +8,32 @@ import { FileUpload } from "./file-upload";
 import { iconButtonClass, inputClass } from "./ui";
 import { watermarkImage } from "./watermark";
 
-const MAX_ITEMS = 30;
-
-// The photos and PDFs of a work sample, each with its own description.
-// Photos can be watermarked in the browser before upload (ticked by default).
+// Photos and PDFs, each with its own description: a work sample's files, or an
+// education entry's diploma. Photos can be watermarked in the browser before
+// upload (ticked by default).
 export function SampleItemsEditor({
   value,
   onChange,
   ownerName,
+  folder = "samples",
+  max = 30,
+  watermarkNote = "work sample · not for reuse",
+  placeholder = "What this shows, and what you did. e.g. A weekly schedule I built for a client's team of 8.",
+  hint = (
+    <>
+      Word, Excel, or PowerPoint samples: save them as PDF first (File &gt; Save as / Export &gt; PDF). Cover
+      any client names, emails, or private details before uploading.
+    </>
+  ),
 }: {
   value: SampleItem[];
   onChange: (items: SampleItem[]) => void;
   ownerName: string;
+  folder?: string;
+  max?: number;
+  watermarkNote?: string;
+  placeholder?: string;
+  hint?: React.ReactNode;
 }) {
   const [watermark, setWatermark] = useState(true);
 
@@ -64,7 +78,7 @@ export function SampleItemsEditor({
               maxLength={1000}
               value={item.caption}
               onChange={(e) => update(i, e.target.value)}
-              placeholder="What this shows, and what you did. e.g. A weekly schedule I built for a client's team of 8."
+              placeholder={placeholder}
               className={`${inputClass} mt-1 resize-y`}
             />
           </div>
@@ -99,29 +113,19 @@ export function SampleItemsEditor({
         </div>
       ))}
 
-      {value.length < MAX_ITEMS && (
+      {value.length < max && (
         <div className="space-y-3 rounded-lg border border-dashed border-border p-3">
           <div className="flex flex-wrap gap-x-6 gap-y-1">
             {/* Uploaders that always start empty; each upload adds a new item */}
             <FileUpload
               bucket="images"
-              folder="samples"
+              folder={folder}
               value={null}
               label="Add photo"
-              transform={
-                watermark
-                  ? (file) => watermarkImage(file, ownerName, "work sample · not for reuse")
-                  : undefined
-              }
+              transform={watermark ? (file) => watermarkImage(file, ownerName, watermarkNote) : undefined}
               onChange={add("image")}
             />
-            <FileUpload
-              bucket="resumes"
-              folder="samples"
-              value={null}
-              label="Add PDF"
-              onChange={add("pdf")}
-            />
+            <FileUpload bucket="resumes" folder={folder} value={null} label="Add PDF" onChange={add("pdf")} />
           </div>
           <label className="flex cursor-pointer items-center gap-2 text-sm">
             <input
@@ -132,10 +136,7 @@ export function SampleItemsEditor({
             />
             Watermark photos with my name (untick for work you want shown clean)
           </label>
-          <p className="text-xs text-muted">
-            Word, Excel, or PowerPoint samples: save them as PDF first (File &gt; Save as / Export &gt; PDF).
-            Cover any client names, emails, or private details before uploading.
-          </p>
+          <p className="text-xs text-muted">{hint}</p>
         </div>
       )}
     </div>

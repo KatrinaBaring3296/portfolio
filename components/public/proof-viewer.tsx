@@ -13,7 +13,19 @@ const noSave = {
   onDragStart: (e: React.DragEvent) => e.preventDefault(),
 };
 
-export function ProofViewer({ items, title }: { items: ProofItem[]; title: string }) {
+export function ProofViewer({
+  items,
+  title,
+  label = "View proof",
+  eyebrow = "Proof",
+  note = "Watermarked preview copy, shared to confirm this role.",
+}: {
+  items: ProofItem[];
+  title: string;
+  label?: string;
+  eyebrow?: string;
+  note?: string;
+}) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [index, setIndex] = useState(0);
   const many = items.length > 1;
@@ -30,12 +42,13 @@ export function ProofViewer({ items, title }: { items: ProofItem[]; title: strin
         }}
         className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1 text-xs font-semibold text-primary-dark transition hover:-translate-y-0.5 hover:border-primary hover:bg-primary-tint"
       >
-        <FileCheck className="size-3.5" aria-hidden /> View proof{many ? ` (${items.length})` : ""}
+        <FileCheck className="size-3.5" aria-hidden /> {label}
+        {many ? ` (${items.length})` : ""}
       </button>
 
       <dialog
         ref={dialogRef}
-        aria-label={`Proof: ${title}`}
+        aria-label={`${eyebrow}: ${title}`}
         // Arrow keys flip between images
         onKeyDown={(e) => {
           if (many && e.key === "ArrowRight") go(1);
@@ -47,7 +60,9 @@ export function ProofViewer({ items, title }: { items: ProofItem[]; title: strin
       >
         <div className="flex items-start justify-between gap-4 p-5 pb-0">
           <div>
-            <p className="font-mono text-xs font-medium tracking-widest text-primary-dark uppercase">Proof</p>
+            <p className="font-mono text-xs font-medium tracking-widest text-primary-dark uppercase">
+              {eyebrow}
+            </p>
             <h3 className="text-lg font-bold">{title}</h3>
           </div>
           <button
@@ -106,7 +121,7 @@ export function ProofViewer({ items, title }: { items: ProofItem[]; title: strin
         )}
 
         <div className="flex flex-wrap items-center justify-between gap-2 px-5 pb-5 text-xs text-muted">
-          <p>Watermarked preview copy, shared to confirm this role.</p>
+          <p>{note}</p>
           {many && (
             <p aria-live="polite">
               {index + 1} / {items.length}

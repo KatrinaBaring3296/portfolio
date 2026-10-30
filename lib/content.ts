@@ -3,6 +3,7 @@ import { createPublicClient } from "./supabase/public";
 import type {
   Certificate,
   Experience,
+  Education,
   Faq,
   FocusProfile,
   Project,
@@ -41,10 +42,11 @@ async function loadContent() {
       supabase.from("skills").select("*").order("sort_order"),
       supabase.from("testimonials").select("*").order("sort_order"),
     ]);
-  const [certificates, faqs, samples] = await Promise.all([
+  const [certificates, faqs, samples, education] = await Promise.all([
     loadAddedLater<Certificate>(supabase, "certificates"),
     loadAddedLater<Faq>(supabase, "faqs"),
     loadAddedLater<WorkSample>(supabase, "work_samples"),
+    loadAddedLater<Education>(supabase, "education"),
   ]);
 
   const firstError = [
@@ -76,10 +78,12 @@ async function loadContent() {
     certificates,
     faqs,
     samples,
+    education,
   };
 }
 
-// Tables added after launch (certificates: migration 0002, faqs: 0009, work_samples: 0010).
+// Tables added after launch (certificates: migration 0002, faqs: 0009, work_samples: 0010,
+// education: 0012).
 // If that SQL hasn't been run yet, show nothing instead of breaking the site.
 async function loadAddedLater<T>(supabase: ReturnType<typeof createPublicClient>, table: string) {
   const { data, error } = await supabase.from(table).select("*").order("sort_order");
@@ -141,6 +145,7 @@ export async function getHomeContent(profile: FocusProfile) {
     certificates: data.certificates.filter((c) => isPublic(c) && isForProfile(c, profile.id)),
     faqs: data.faqs.filter((f) => isPublic(f) && isForProfile(f, profile.id)),
     samples: data.samples.filter((s) => isPublic(s) && isForProfile(s, profile.id)),
+    education: data.education.filter((e) => isPublic(e) && isForProfile(e, profile.id)),
   };
 }
 

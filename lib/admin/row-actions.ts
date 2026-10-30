@@ -17,6 +17,7 @@ const TABLES = [
   "certificates",
   "faqs",
   "work_samples",
+  "education",
 ] as const;
 export type ContentTable = (typeof TABLES)[number];
 
@@ -72,6 +73,10 @@ const FILE_COLUMNS: Partial<Record<ContentTable, { column: string; bucket: Bucke
     { column: "items", bucket: "resumes" },
   ],
   skills: [{ column: "logo_url", bucket: "images" }],
+  education: [
+    { column: "files", bucket: "images" },
+    { column: "files", bucket: "resumes" },
+  ],
   experience: [
     { column: "proof", bucket: "images" },
     { column: "proof_images", bucket: "images" }, // older caption-less list

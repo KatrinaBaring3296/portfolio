@@ -363,6 +363,96 @@ export async function saveFaq(input: FaqInput): Promise<ActionResult> {
   return ok(input.id ? "Question saved." : "Question added.");
 }
 
+// Photos are stored in the "images" bucket, PDFs in "resumes" (sample and education files)
+const bucketFor = (kind: SampleItem["kind"]) => (kind === "pdf" ? "resumes" : "images");
+
+// ---- Education ----
+
+export type EducationInput = {
+  id?: string;
+  school: string;
+  program: string;
+  location: string;
+  start_year: number | null;
+  end_year: number | null;
+  in_progress: boolean;
+  details: string;
+  files: SampleItem[]; // photos and PDFs, in display order
+  status: Status;
+  show_for: string[];
+};
+
+const MAX_EDUCATION_FILES = 10;
+
+const isYear = (y: number | null) => y === null || (Number.isInteger(y) && y >= 1950 && y <= 2100);
+
+export async function saveEducation(input: EducationInput): Promise<ActionResult> {
+  const { supabase } = await requireAdmin();
+  const problem = checkCommon(input);
+  if (problem) return fail(problem);
+
+  const school = input.school.trim();
+  const program = input.program.trim();
+  if (!school || school.length > 150) return fail("School is required (150 characters max).");
+  if (!program || program.length > 150) return fail("Program or strand is required (150 characters max).");
+  if (input.location.trim().length > 100) return fail("Location is too long (100 max).");
+  if (input.details.trim().length > 1000) return fail("Details are too long (1000 max).");
+  if (!isYear(input.start_year) || !isYear(input.end_year))
+    return fail("Years must be between 1950 and 2100.");
+  if (input.start_year && input.end_year && input.end_year < input.start_year) {
+    return fail("The end year can't be before the start year.");
+  }
+  const files: SampleItem[] = input.files.map((item) => ({
+    url: item.url,
+    kind: item.kind === "pdf" ? "pdf" : "image",
+    name: (item.name ?? "").trim().slice(0, 200),
+    caption: (item.caption ?? "").trim(),
+  }));
+  if (files.length > MAX_EDUCATION_FILES)
+    return fail(`Up to ${MAX_EDUCATION_FILES} photos and PDFs per school.`);
+  if (!files.every((item) => isOwnFileUrl(item.url, bucketFor(item.kind)))) {
+    return fail("Photos and PDFs must be uploaded here.");
+  }
+  if (files.some((item) => item.caption.length > 1000))
+    return fail("Keep each description under 1000 characters.");
+
+  // Remember the old files so we can delete ones that were removed
+  const { data: before } = input.id
+    ? await supabase.from("education").select("*").eq("id", input.id).single()
+    : { data: null };
+
+  const { error } = await upsert(supabase, "education", input.id, {
+    school,
+    program,
+    location: input.location.trim(),
+    start_year: input.start_year,
+    end_year: input.end_year,
+    in_progress: input.in_progress,
+    details: input.details.trim(),
+    files,
+    status: input.status,
+    show_for: input.show_for,
+  });
+  if (error?.code === "42P01" || error?.code === "PGRST205") {
+    return fail("The Education table doesn't exist yet. Run supabase/updates/0012_education.sql first.");
+  }
+  if (error?.code === "PGRST204" && error.message.includes("files")) {
+    return fail(
+      "Uploading files needs a one-time setup. Run supabase/updates/0012_education.sql first.",
+    );
+  }
+  if (error) return dbError("save the school", error);
+
+  if (before) {
+    const keep = new Set(files.map((item) => item.url));
+    const removed = ((before.files as SampleItem[] | undefined) ?? []).filter((item) => !keep.has(item.url));
+    await Promise.all(removed.map((item) => removeFile(supabase, item.url, bucketFor(item.kind))));
+  }
+
+  contentChanged();
+  return ok(input.id ? "Education saved." : "Education added.");
+}
+
 // ---- Sample Work ----
 
 export type SampleInput = {
@@ -379,8 +469,6 @@ export type SampleInput = {
 };
 
 const MAX_SAMPLE_ITEMS = 30;
-// Photos are stored in the "images" bucket, PDFs in "resumes"
-const bucketFor = (kind: SampleItem["kind"]) => (kind === "pdf" ? "resumes" : "images");
 
 export async function saveSample(input: SampleInput): Promise<ActionResult> {
   const { supabase } = await requireAdmin();

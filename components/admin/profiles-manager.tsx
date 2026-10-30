@@ -24,6 +24,7 @@ const SECTION_LABELS: Record<SectionKey, string> = {
   samples: "Sample work",
   projects: "Projects",
   skills: "Skills & tools",
+  education: "Education",
   certifications: "Certifications",
   testimonials: "Testimonials",
   faq: "FAQ",

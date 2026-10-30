@@ -12,6 +12,7 @@ export type SectionKey =
   | "samples"
   | "projects"
   | "skills"
+  | "education"
   | "certifications"
   | "testimonials"
   | "faq"
@@ -25,6 +26,7 @@ export const ALL_SECTIONS: SectionKey[] = [
   "samples",
   "projects",
   "skills",
+  "education",
   "certifications",
   "testimonials",
   "faq",
@@ -54,6 +56,33 @@ export type Faq = {
   show_for: string[];
   sort_order: number;
 };
+
+// A school, strand, or degree (migration 0012)
+export type Education = {
+  id: string;
+  school: string;
+  program: string; // e.g. "Senior High School · ABM Strand"
+  location: string;
+  start_year: number | null;
+  end_year: number | null; // graduation year, or the expected one
+  in_progress: boolean;
+  details: string; // honors, focus, thesis
+  files?: SampleItem[]; // diploma, transcript (migration 0013; missing until it's run)
+  status: Status;
+  show_for: string[];
+  sort_order: number;
+};
+
+/** "2016 – 2018", "2023 – Expected 2027", "2023 – Present", or "" with no years. */
+export function educationYears(e: Pick<Education, "start_year" | "end_year" | "in_progress">) {
+  const end = e.end_year
+    ? `${e.in_progress ? "Expected " : ""}${e.end_year}`
+    : e.in_progress
+      ? "Present"
+      : "";
+  if (e.start_year && end) return `${e.start_year} – ${end}`;
+  return e.start_year ? String(e.start_year) : end;
+}
 
 export type SocialLink = {
   label: string; // e.g. "LinkedIn"
