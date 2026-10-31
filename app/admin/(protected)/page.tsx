@@ -6,8 +6,21 @@ import { requireAdmin } from "@/lib/auth";
 
 export const metadata = { title: "Dashboard" };
 
-export default async function DashboardPage() {
+// Time ranges for the résumé download count (?downloads=... in the URL)
+const PERIODS = {
+  day: { tab: "Today", label: "today (Manila time)" },
+  week: { tab: "Week", label: "last 7 days" },
+  month: { tab: "Month", label: "last 30 days" },
+  year: { tab: "Year", label: "last 12 months" },
+  all: { tab: "All time", label: "all time" },
+} as const;
+type Period = keyof typeof PERIODS;
+
+export default async function DashboardPage({ searchParams }: PageProps<"/admin">) {
   const { supabase } = await requireAdmin();
+  const { downloads: downloadsParam } = await searchParams;
+  const period: Period =
+    typeof downloadsParam === "string" && downloadsParam in PERIODS ? (downloadsParam as Period) : "month";
 
   // Logged in as the admin, so RLS lets these read messages and hidden rows.
   const [unread, total, settings, profiles, categories, services] = await Promise.all([
@@ -25,13 +38,11 @@ export default async function DashboardPage() {
 
   const defaultProfile = settings.data?.default_profile as { label: string; slug: string } | null | undefined;
 
-  const downloads = await recentResumeDownloads(supabase);
-  const downloadCounts: Record<string, number> = {};
-  for (const d of downloads.data ?? [])
-    downloadCounts[d.profile_slug] = (downloadCounts[d.profile_slug] ?? 0) + 1;
-  const totalDownloads = (downloads.data ?? []).length;
-  const profileLabel = (slug: string) =>
-    (profiles.data ?? []).find((p) => (p as { slug?: string }).slug === slug)?.label ?? slug;
+  const downloads = await resumeDownloadCounts(
+    supabase,
+    (profiles.data ?? []).map((p) => ({ slug: p.slug, label: p.label })),
+    period,
+  );
 
   return (
     <>
@@ -61,31 +72,46 @@ export default async function DashboardPage() {
 
       <h2 className="mt-12 text-xl font-bold">Visitors</h2>
       <div className="mt-5 grid gap-4 md:grid-cols-2">
-        <section className="rounded-2xl border border-border bg-surface p-5">
+        <section id="downloads" className="scroll-mt-24 rounded-2xl border border-border bg-surface p-5">
           <div className="flex items-center gap-3">
             <span className="inline-flex size-10 items-center justify-center rounded-xl bg-primary-tint text-primary-dark">
               <Download className="size-5" aria-hidden />
             </span>
             <div>
-              <p className="text-2xl font-bold">{downloads.error ? "–" : totalDownloads}</p>
-              <p className="text-sm text-muted">Résumé downloads, last 30 days</p>
+              <p className="text-2xl font-bold">{downloads.error ? "–" : downloads.total}</p>
+              <p className="text-sm text-muted">Résumé downloads, {PERIODS[period].label}</p>
             </div>
+          </div>
+          <div className="mt-4 flex flex-wrap gap-1.5" role="group" aria-label="Time range">
+            {(Object.keys(PERIODS) as Period[]).map((key) => (
+              <Link
+                key={key}
+                href={key === "month" ? "/admin#downloads" : `/admin?downloads=${key}#downloads`}
+                scroll={false}
+                aria-current={key === period ? "page" : undefined}
+                className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+                  key === period
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border hover:border-primary"
+                }`}
+              >
+                {PERIODS[key].tab}
+              </Link>
+            ))}
           </div>
           {downloads.error ? (
             <p className="mt-4 text-xs text-muted">
               Run <code className="font-mono">supabase/setup.sql</code> to start counting.
             </p>
           ) : (
-            totalDownloads > 0 && (
+            downloads.total > 0 && (
               <ul className="mt-4 space-y-1.5 text-sm">
-                {Object.entries(downloadCounts)
-                  .sort((a, b) => b[1] - a[1])
-                  .map(([slug, count]) => (
-                    <li key={slug} className="flex justify-between gap-3">
-                      <span>{profileLabel(slug)}</span>
-                      <span className="font-mono text-muted">{count}</span>
-                    </li>
-                  ))}
+                {downloads.rows.map(({ label, count }) => (
+                  <li key={label} className="flex justify-between gap-3">
+                    <span>{label}</span>
+                    <span className="font-mono text-muted">{count}</span>
+                  </li>
+                ))}
               </ul>
             )
           )}
@@ -163,10 +189,46 @@ export default async function DashboardPage() {
   );
 }
 
-// Résumé downloads in the last 30 days (table from migration 0003)
-async function recentResumeDownloads(supabase: SupabaseClient) {
-  const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-  return supabase.from("resume_downloads").select("profile_slug").gte("created_at", since);
+// Start of the time range, or null for all time. "Today" starts at midnight
+// in Manila (UTC+8, no daylight saving).
+function periodStart(period: Period): string | null {
+  const DAY = 24 * 60 * 60 * 1000;
+  const now = Date.now();
+  if (period === "day") {
+    const MANILA = 8 * 60 * 60 * 1000;
+    return new Date(Math.floor((now + MANILA) / DAY) * DAY - MANILA).toISOString();
+  }
+  if (period === "week") return new Date(now - 7 * DAY).toISOString();
+  if (period === "month") return new Date(now - 30 * DAY).toISOString();
+  if (period === "year") return new Date(now - 365 * DAY).toISOString();
+  return null;
+}
+
+// Résumé downloads in the time range, per profile, most downloaded first
+// (table from migration 0003). Uses counts instead of fetching every row, so
+// "All time" stays fast and accurate however many downloads there are.
+async function resumeDownloadCounts(
+  supabase: SupabaseClient,
+  profiles: { slug: string; label: string }[],
+  period: Period,
+) {
+  const since = periodStart(period);
+  const count = (slug?: string) => {
+    let query = supabase.from("resume_downloads").select("*", { count: "exact", head: true });
+    if (since) query = query.gte("created_at", since);
+    if (slug) query = query.eq("profile_slug", slug);
+    return query;
+  };
+  const [total, ...perProfile] = await Promise.all([count(), ...profiles.map((p) => count(p.slug))]);
+  if (total.error) return { error: total.error, total: 0, rows: [] };
+
+  const rows = profiles
+    .map((p, i) => ({ label: p.label, count: perProfile[i].count ?? 0 }))
+    .filter((r) => r.count > 0);
+  // Downloads from profiles that were since deleted or renamed
+  const other = (total.count ?? 0) - rows.reduce((sum, r) => sum + r.count, 0);
+  if (other > 0) rows.push({ label: "Other (deleted profiles)", count: other });
+  return { error: null, total: total.count ?? 0, rows: rows.sort((a, b) => b.count - a.count) };
 }
 
 function QuickList({ title, children }: { title: string; children: React.ReactNode }) {
