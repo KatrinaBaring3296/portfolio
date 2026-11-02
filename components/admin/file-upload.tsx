@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText, ImagePlus, LoaderCircle, Trash2, Upload } from "lucide-react";
+import { FileText, ImagePlus, LoaderCircle, Trash2, Upload, Video } from "lucide-react";
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -10,6 +10,14 @@ import { iconButtonClass, secondaryButtonClass } from "./ui";
 const LIMITS = {
   images: { maxMB: 5, accept: "image/jpeg,image/png,image/webp,image/avif,image/gif" },
   resumes: { maxMB: 10, accept: "application/pdf" },
+  // 50 MB is the largest upload Supabase's free plan allows
+  videos: { maxMB: 50, accept: "video/mp4,video/webm,video/quicktime" },
+};
+
+const WRONG_TYPE = {
+  images: "Please choose a JPG, PNG, WebP, AVIF, or GIF image.",
+  resumes: "Please choose a PDF file.",
+  videos: "Please choose an MP4, WebM, or MOV video.",
 };
 
 // Uploads one file straight from the browser to a Supabase Storage bucket and
@@ -20,10 +28,10 @@ export function FileUpload({
   folder,
   value,
   onChange,
-  label = bucket === "images" ? "Upload image" : "Upload PDF",
+  label = { images: "Upload image", resumes: "Upload PDF", videos: "Upload video" }[bucket],
   transform,
 }: {
-  bucket: "images" | "resumes";
+  bucket: "images" | "resumes" | "videos";
   folder: string; // e.g. "profile", "projects"
   value: string | null;
   onChange: (url: string | null, file?: File) => void; // file: what was picked (for its name)
@@ -39,12 +47,7 @@ export function FileUpload({
   async function handleFile(picked: File | undefined) {
     if (!picked) return;
     if (!accept.split(",").includes(picked.type)) {
-      toast(
-        bucket === "images"
-          ? "Please choose a JPG, PNG, WebP, AVIF, or GIF image."
-          : "Please choose a PDF file.",
-        "error",
-      );
+      toast(WRONG_TYPE[bucket], "error");
       return;
     }
 
@@ -95,7 +98,7 @@ export function FileUpload({
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm font-medium text-primary-dark hover:underline"
           >
-            <FileText className="size-4" aria-hidden /> View PDF
+            <FileText className="size-4" aria-hidden /> {bucket === "videos" ? "View video" : "View PDF"}
           </a>
         ))}
 
@@ -117,6 +120,8 @@ export function FileUpload({
           <LoaderCircle className="size-4 animate-spin" aria-hidden />
         ) : bucket === "images" ? (
           <ImagePlus className="size-4" aria-hidden />
+        ) : bucket === "videos" ? (
+          <Video className="size-4" aria-hidden />
         ) : (
           <Upload className="size-4" aria-hidden />
         )}

@@ -77,6 +77,10 @@ export default async function SamplePage({ params }: PageProps<"/samples/[slug]"
               <li key={item.url} className="grid items-start gap-5 md:grid-cols-[3fr_2fr]">
                 {item.kind === "image" ? (
                   <PhotoItem item={item} alt={`${sample.title}, file ${i + 1}`} />
+                ) : item.kind === "video" ? (
+                  <VideoItem item={item} />
+                ) : item.kind === "link" ? (
+                  <VideoLinkItem item={item} title={`${sample.title}, video ${i + 1}`} />
                 ) : (
                   <PdfItem item={item} />
                 )}
@@ -120,6 +124,38 @@ function PhotoItem({ item, alt }: { item: SampleItem; alt: string }) {
         <Maximize2 className="size-3.5" aria-hidden /> Full size
       </span>
     </a>
+  );
+}
+
+// An uploaded video with the browser's own player. Only its first frame and
+// length load until the visitor presses play, to save bandwidth.
+function VideoItem({ item }: { item: SampleItem }) {
+  return (
+    <video
+      src={item.url}
+      controls
+      preload="metadata"
+      playsInline
+      controlsList="nodownload"
+      className="aspect-video w-full rounded-2xl border border-border bg-black"
+    >
+      <a href={item.url}>Watch the video</a>
+    </video>
+  );
+}
+
+// A YouTube, Loom, Vimeo, or Google Drive video, played inside the page
+function VideoLinkItem({ item, title }: { item: SampleItem; title: string }) {
+  return (
+    <iframe
+      src={item.url}
+      title={item.name ? `${title} (${item.name})` : title}
+      loading="lazy"
+      allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+      allowFullScreen
+      referrerPolicy="strict-origin-when-cross-origin"
+      className="aspect-video w-full rounded-2xl border border-border bg-black"
+    />
   );
 }
 

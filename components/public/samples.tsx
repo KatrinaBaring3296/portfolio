@@ -1,4 +1,4 @@
-import { ArrowRight, FileText, TrendingUp } from "lucide-react";
+import { ArrowRight, FileText, PlayCircle, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { sampleItemCount, type WorkSample } from "@/lib/types";
 import { TechTag } from "./badges";
@@ -15,6 +15,7 @@ export function Samples({ items, tinted }: { items: WorkSample[]; tinted: boolea
       <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((sample, i) => {
           const cover = sample.items.find((item) => item.kind === "image");
+          const hasVideo = sample.items.some((item) => item.kind === "video" || item.kind === "link");
           return (
             <li key={sample.id}>
               {/* Cards in the same row cascade in left to right */}
@@ -32,9 +33,16 @@ export function Samples({ items, tinted }: { items: WorkSample[]; tinted: boolea
                       imageClassName="transition-transform duration-500 group-hover:scale-105"
                     />
                   ) : (
-                    // PDF-only samples get a document icon instead of a photo
+                    // Samples without photos get a play icon (videos) or a document icon (PDFs)
                     <div className="flex aspect-video items-center justify-center bg-primary-tint text-primary-dark">
-                      <FileText className="size-12 stroke-[1.5]" aria-hidden />
+                      {hasVideo ? (
+                        <PlayCircle
+                          className="size-12 stroke-[1.5] transition-transform duration-500 group-hover:scale-110"
+                          aria-hidden
+                        />
+                      ) : (
+                        <FileText className="size-12 stroke-[1.5]" aria-hidden />
+                      )}
                     </div>
                   )}
                   <div className="flex flex-1 flex-col p-5">

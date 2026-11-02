@@ -66,11 +66,13 @@ const FILE_COLUMNS: Partial<Record<ContentTable, { column: string; bucket: Bucke
     { column: "gallery", bucket: "images" },
   ],
   certificates: [{ column: "image_url", bucket: "images" }],
-  // Each sample item is a photo (images bucket) or a PDF (resumes bucket);
-  // removeFile skips URLs from the other bucket, so listing both is safe.
+  // Each sample item is a photo (images bucket), a PDF (resumes bucket), an
+  // uploaded video (videos bucket), or a video link (not stored here);
+  // removeFile skips URLs from other buckets and sites, so listing all is safe.
   work_samples: [
     { column: "items", bucket: "images" },
     { column: "items", bucket: "resumes" },
+    { column: "items", bucket: "videos" },
   ],
   skills: [{ column: "logo_url", bucket: "images" }],
   education: [

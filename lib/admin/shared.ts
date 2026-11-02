@@ -61,7 +61,7 @@ export function isHttpUrl(value: string) {
 
 // ---- Supabase Storage ----
 
-export type Bucket = "images" | "resumes";
+export type Bucket = "images" | "resumes" | "videos";
 
 function publicPrefix(bucket: Bucket) {
   return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${bucket}/`;

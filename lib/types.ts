@@ -169,13 +169,61 @@ export type Project = {
   sort_order: number;
 };
 
-// One photo or PDF in a work sample, with its own description (migration 0010)
+// One photo, PDF, or video in a work sample, with its own description (migration 0010).
+// "video" is an uploaded file (migration 0014); "link" is a YouTube, Loom,
+// Vimeo, or Google Drive video played on the page (url = its embed address).
 export type SampleItem = {
   url: string;
-  kind: "image" | "pdf";
-  name: string; // original file name, shown for PDFs
+  kind: "image" | "pdf" | "video" | "link";
+  name: string; // original file name (PDFs, videos), or the site name for links
   caption: string;
 };
+
+/**
+ * Turns a YouTube, Loom, Vimeo, or Google Drive link into the address that
+ * plays it inside a page, or null if it isn't one of those. Passing an embed
+ * address back in gives the same address, which is how saving checks it.
+ */
+export function videoEmbed(link: string): { url: string; name: string } | null {
+  let url: URL;
+  try {
+    url = new URL(link.trim());
+  } catch {
+    return null;
+  }
+  if (url.protocol !== "https:" && url.protocol !== "http:") return null;
+  const host = url.hostname.replace(/^(www|m)\./, "");
+  const path = url.pathname;
+  let match: RegExpMatchArray | null;
+
+  // youtube.com/watch?v=ID, youtu.be/ID, /shorts/ID, /live/ID, /embed/ID
+  const youtubeId =
+    host === "youtu.be"
+      ? path.slice(1)
+      : host === "youtube.com" || host === "youtube-nocookie.com"
+        ? (url.searchParams.get("v") ?? path.match(/^\/(?:shorts|live|embed)\/([^/]+)/)?.[1])
+        : null;
+  if (youtubeId && /^[\w-]{11}$/.test(youtubeId)) {
+    // The no-cookie player doesn't track visitors until they press play
+    return { url: `https://www.youtube-nocookie.com/embed/${youtubeId}`, name: "YouTube" };
+  }
+  if (host === "loom.com" && (match = path.match(/^\/(?:share|embed)\/([0-9a-f]{32})/))) {
+    return { url: `https://www.loom.com/embed/${match[1]}`, name: "Loom" };
+  }
+  // vimeo.com/ID, vimeo.com/ID/HASH (unlisted), player.vimeo.com/video/ID?h=HASH
+  if (
+    (host === "vimeo.com" && (match = path.match(/^\/(\d+)(?:\/([0-9a-f]+))?\/?$/))) ||
+    (host === "player.vimeo.com" && (match = path.match(/^\/video\/(\d+)\/?$/)))
+  ) {
+    const hash = match[2] ?? url.searchParams.get("h");
+    const query = hash && /^[0-9a-f]+$/.test(hash) ? `?h=${hash}` : "";
+    return { url: `https://player.vimeo.com/video/${match[1]}${query}`, name: "Vimeo" };
+  }
+  if (host === "drive.google.com" && (match = path.match(/^\/file\/d\/([\w-]+)/))) {
+    return { url: `https://drive.google.com/file/d/${match[1]}/preview`, name: "Google Drive" };
+  }
+  return null;
+}
 
 export type WorkSample = {
   id: string;
@@ -191,13 +239,15 @@ export type WorkSample = {
   sort_order: number;
 };
 
-/** "3 photos · 1 PDF", or "" when there are none. */
+/** "3 photos · 1 PDF · 2 videos", or "" when there are none. */
 export function sampleItemCount(items: SampleItem[]) {
   const photos = items.filter((i) => i.kind === "image").length;
-  const pdfs = items.length - photos;
+  const pdfs = items.filter((i) => i.kind === "pdf").length;
+  const videos = items.length - photos - pdfs;
   return [
     photos && `${photos} photo${photos === 1 ? "" : "s"}`,
     pdfs && `${pdfs} PDF${pdfs === 1 ? "" : "s"}`,
+    videos && `${videos} video${videos === 1 ? "" : "s"}`,
   ]
     .filter(Boolean)
     .join(" · ");

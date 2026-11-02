@@ -1,16 +1,25 @@
 "use client";
 
-import { ArrowDown, ArrowUp, FileText, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, FileText, Link2, PlayCircle, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-import type { SampleItem } from "@/lib/types";
+import { type SampleItem, videoEmbed } from "@/lib/types";
 import { FileUpload } from "./file-upload";
-import { iconButtonClass, inputClass } from "./ui";
+import { useToast } from "./toast";
+import { iconButtonClass, inputClass, secondaryButtonClass } from "./ui";
 import { watermarkImage } from "./watermark";
+
+const KIND_NAME: Record<SampleItem["kind"], string> = {
+  image: "photo",
+  pdf: "file",
+  video: "video",
+  link: "video",
+};
 
 // Photos and PDFs, each with its own description: a work sample's files, or an
 // education entry's diploma. Photos can be watermarked in the browser before
-// upload (ticked by default).
+// upload (ticked by default). With allowVideo, also uploaded videos and
+// YouTube / Loom / Vimeo / Google Drive video links.
 export function SampleItemsEditor({
   value,
   onChange,
@@ -19,6 +28,7 @@ export function SampleItemsEditor({
   max = 30,
   watermarkNote = "work sample · not for reuse",
   placeholder = "What this shows, and what you did. e.g. A weekly schedule I built for a client's team of 8.",
+  allowVideo = false,
   hint = (
     <>
       Word, Excel, or PowerPoint samples: save them as PDF first (File &gt; Save as / Export &gt; PDF). Cover
@@ -34,8 +44,11 @@ export function SampleItemsEditor({
   watermarkNote?: string;
   placeholder?: string;
   hint?: React.ReactNode;
+  allowVideo?: boolean;
 }) {
+  const toast = useToast();
   const [watermark, setWatermark] = useState(true);
+  const [link, setLink] = useState("");
 
   const update = (index: number, caption: string) =>
     onChange(value.map((item, i) => (i === index ? { ...item, caption } : item)));
@@ -49,6 +62,22 @@ export function SampleItemsEditor({
   const add = (kind: SampleItem["kind"]) => (url: string | null, file?: File) =>
     url && onChange([...value, { url, kind, name: file?.name ?? "", caption: "" }]);
 
+  // A pasted YouTube, Loom, Vimeo, or Google Drive link becomes a video played on the page
+  const addLink = () => {
+    const embed = videoEmbed(link);
+    if (!embed) {
+      toast("Paste a YouTube, Loom, Vimeo, or Google Drive video link.", "error");
+      return;
+    }
+    if (value.some((item) => item.url === embed.url)) {
+      toast("That video is already added.", "error");
+      return;
+    }
+    onChange([...value, { url: embed.url, kind: "link", name: embed.name, caption: "" }]);
+    setLink("");
+    toast("Video added. Click Save to keep it.");
+  };
+
   return (
     <div className="space-y-3">
       {value.map((item, i) => (
@@ -56,6 +85,14 @@ export function SampleItemsEditor({
           <div className="relative flex h-20 w-28 shrink-0 items-center justify-center overflow-hidden rounded-md bg-primary-tint">
             {item.kind === "image" ? (
               <Image src={item.url} alt={`File ${i + 1}`} fill sizes="112px" className="object-cover" />
+            ) : item.kind === "video" ? (
+              // Shows the video's first frame; only a small part of the file loads
+              <video src={item.url} preload="metadata" muted className="size-full object-cover" />
+            ) : item.kind === "link" ? (
+              <span className="flex flex-col items-center gap-1 p-1 text-center text-xs font-semibold text-primary-dark">
+                <PlayCircle className="size-6" aria-hidden />
+                {item.name || "Video link"}
+              </span>
             ) : (
               <a
                 href={item.url}
@@ -70,7 +107,7 @@ export function SampleItemsEditor({
           </div>
           <div className="min-w-0 flex-1">
             <label htmlFor={`sample-caption-${i}`} className="text-xs font-semibold">
-              Description of this {item.kind === "pdf" ? "file" : "photo"} (optional)
+              Description of this {KIND_NAME[item.kind]} (optional)
             </label>
             <textarea
               id={`sample-caption-${i}`}
@@ -126,7 +163,49 @@ export function SampleItemsEditor({
               onChange={add("image")}
             />
             <FileUpload bucket="resumes" folder={folder} value={null} label="Add PDF" onChange={add("pdf")} />
+            {allowVideo && (
+              <FileUpload
+                bucket="videos"
+                folder={folder}
+                value={null}
+                label="Add video"
+                onChange={add("video")}
+              />
+            )}
           </div>
+          {allowVideo && (
+            <div>
+              <label htmlFor={`video-link-${folder}`} className="text-xs font-semibold">
+                Or paste a video link (YouTube, Loom, Vimeo, or Google Drive)
+              </label>
+              <div className="mt-1 flex gap-2">
+                <input
+                  id={`video-link-${folder}`}
+                  type="url"
+                  inputMode="url"
+                  value={link}
+                  onChange={(e) => setLink(e.target.value)}
+                  onKeyDown={(e) => {
+                    // Enter adds the link instead of submitting the whole form
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      addLink();
+                    }
+                  }}
+                  placeholder="https://youtu.be/..."
+                  className={inputClass}
+                />
+                <button
+                  type="button"
+                  onClick={addLink}
+                  disabled={!link.trim()}
+                  className={secondaryButtonClass}
+                >
+                  <Link2 className="size-4" aria-hidden /> Add link
+                </button>
+              </div>
+            </div>
+          )}
           <label className="flex cursor-pointer items-center gap-2 text-sm">
             <input
               type="checkbox"

@@ -112,7 +112,7 @@ export function SamplesManager({
                   table="work_samples"
                   id={s.id}
                   label={s.title}
-                  description="The sample page and all its photos and PDFs are deleted."
+                  description="The sample page and all its photos, PDFs, and uploaded videos are deleted."
                 />
               </div>
             </li>
@@ -280,13 +280,22 @@ function SampleForm({
       </Field>
 
       <Field
-        label="Photos and PDFs"
+        label="Photos, PDFs, and videos"
         hint="Shown in this order on the sample page. The first photo is the card's cover."
       >
         <SampleItemsEditor
           value={form.items}
           onChange={(items) => set("items", items)}
           ownerName={ownerName}
+          allowVideo
+          hint={
+            <>
+              Word, Excel, or PowerPoint samples: save them as PDF first (File &gt; Save as / Export &gt;
+              PDF). Videos: upload short clips (MP4 works best, 50 MB max). For longer videos, upload to
+              YouTube as <strong>Unlisted</strong> (or use Loom) and paste the link: it doesn&apos;t use your
+              free storage. Cover any client names, emails, or private details first.
+            </>
+          }
         />
       </Field>
 

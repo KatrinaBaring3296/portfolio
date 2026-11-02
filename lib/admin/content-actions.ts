@@ -11,6 +11,7 @@ import {
   type SampleItem,
   type SkillGroup,
   type Status,
+  videoEmbed,
 } from "@/lib/types";
 import {
   type ActionResult,
@@ -363,8 +364,19 @@ export async function saveFaq(input: FaqInput): Promise<ActionResult> {
   return ok(input.id ? "Question saved." : "Question added.");
 }
 
-// Photos are stored in the "images" bucket, PDFs in "resumes" (sample and education files)
-const bucketFor = (kind: SampleItem["kind"]) => (kind === "pdf" ? "resumes" : "images");
+// Photos are stored in the "images" bucket, PDFs in "resumes", uploaded videos
+// in "videos" (sample and education files). Video links aren't stored here.
+const bucketFor = (kind: SampleItem["kind"]) =>
+  kind === "pdf" ? "resumes" : kind === "video" ? "videos" : "images";
+
+// A sample file must be uploaded here, or be a video link in its embed form
+const isValidItem = (item: SampleItem) =>
+  item.kind === "link"
+    ? videoEmbed(item.url)?.url === item.url
+    : isOwnFileUrl(item.url, bucketFor(item.kind));
+
+const removeItemFile = (supabase: SupabaseClient, item: SampleItem) =>
+  item.kind === "link" ? Promise.resolve() : removeFile(supabase, item.url, bucketFor(item.kind));
 
 // ---- Education ----
 
@@ -463,7 +475,7 @@ export type SampleInput = {
   result: string;
   description: string;
   tools: string[];
-  items: SampleItem[]; // photos and PDFs, in display order
+  items: SampleItem[]; // photos, PDFs, and videos, in display order
   status: Status;
   show_for: string[];
 };
@@ -480,7 +492,7 @@ export async function saveSample(input: SampleInput): Promise<ActionResult> {
   const tools = [...new Set(input.tools.map((t) => t.trim()).filter(Boolean))];
   const items: SampleItem[] = input.items.map((item) => ({
     url: item.url,
-    kind: item.kind === "pdf" ? "pdf" : "image",
+    kind: (["pdf", "video", "link"] as const).find((kind) => kind === item.kind) ?? "image",
     name: (item.name ?? "").trim().slice(0, 200),
     caption: (item.caption ?? "").trim(),
   }));
@@ -492,9 +504,11 @@ export async function saveSample(input: SampleInput): Promise<ActionResult> {
   if (input.description.length > 20000) return fail("Description is too long (20,000 max).");
   if (tools.length > 20 || tools.some((t) => t.length > 40))
     return fail("Up to 20 tools, 40 characters each.");
-  if (items.length > MAX_SAMPLE_ITEMS) return fail(`Up to ${MAX_SAMPLE_ITEMS} photos and PDFs per sample.`);
-  if (!items.every((item) => isOwnFileUrl(item.url, bucketFor(item.kind)))) {
-    return fail("Photos and PDFs must be uploaded here.");
+  if (items.length > MAX_SAMPLE_ITEMS) return fail(`Up to ${MAX_SAMPLE_ITEMS} files and videos per sample.`);
+  if (!items.every(isValidItem)) {
+    return fail(
+      "Files must be uploaded here, and video links must be from YouTube, Loom, Vimeo, or Google Drive.",
+    );
   }
   if (items.some((item) => item.caption.length > 1000))
     return fail("Keep each description under 1000 characters.");
@@ -533,7 +547,7 @@ export async function saveSample(input: SampleInput): Promise<ActionResult> {
   if (before) {
     const keep = new Set(items.map((item) => item.url));
     const removed = ((before.items as SampleItem[]) ?? []).filter((item) => !keep.has(item.url));
-    await Promise.all(removed.map((item) => removeFile(supabase, item.url, bucketFor(item.kind))));
+    await Promise.all(removed.map((item) => removeItemFile(supabase, item)));
   }
 
   contentChanged();
