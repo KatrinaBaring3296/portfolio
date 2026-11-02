@@ -4,11 +4,11 @@ import { SiteFooter } from "@/components/public/site-footer";
 import { SiteHeader } from "@/components/public/site-header";
 import { WhatsAppButton, whatsappLink } from "@/components/public/whatsapp-button";
 import { brandLogoPath } from "@/lib/brand-icons";
-import { getSettings } from "@/lib/content";
+import { getNavSections, getSettings } from "@/lib/content";
 
 // Header and footer around every public page (the admin panel gets its own layout).
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
-  const settings = await getSettings();
+  const [settings, nav] = await Promise.all([getSettings(), getNavSections()]);
   // Floating WhatsApp button, if a WhatsApp link is in your social links
   const whatsapp = whatsappLink(settings.social_links, settings.name.split(" ")[0] || settings.name);
   const whatsappLogo = brandLogoPath("whatsapp");
@@ -23,7 +23,7 @@ export default async function PublicLayout({ children }: { children: React.React
       </a>
       {/* Thin bar at the top that fills as you scroll (pure CSS, see globals.css) */}
       <div className="scroll-progress" aria-hidden />
-      <SiteHeader name={settings.name} />
+      <SiteHeader name={settings.name} nav={nav} />
       <main id="main">
         {/* Crossfades the page content when moving between pages
             (e.g. homepage -> project page). Unsupported browsers just switch. */}

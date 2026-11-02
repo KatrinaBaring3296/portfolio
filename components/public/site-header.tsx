@@ -5,17 +5,33 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import type { SectionKey } from "@/lib/types";
 
-const NAV = [
-  { href: "#about", label: "About" },
-  { href: "#services", label: "Services" },
-  { href: "#experience", label: "Experience" },
-  { href: "#samples", label: "Samples" },
-  { href: "#projects", label: "Projects" },
-  { href: "#skills", label: "Skills" },
-];
+// Link text for each homepage section. Contact isn't in the desktop links:
+// the "Hire me" button goes there.
+const NAV_LABELS: Record<SectionKey, string> = {
+  about: "About",
+  services: "Services",
+  experience: "Experience",
+  samples: "Samples",
+  projects: "Projects",
+  skills: "Skills",
+  education: "Education",
+  certifications: "Certificates",
+  testimonials: "Reviews",
+  faq: "FAQ",
+  contact: "Contact",
+};
 
-export function SiteHeader({ name }: { name: string }) {
+// The links follow the Homepage Section order set in Admin > Profiles, and
+// only list sections that have something to show.
+export function SiteHeader({
+  name,
+  nav,
+}: {
+  name: string;
+  nav: { main: SectionKey[]; byProfile: Record<string, SectionKey[]> };
+}) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -23,6 +39,15 @@ export function SiteHeader({ name }: { name: string }) {
   // On other pages (like a project), the links go back to the main homepage.
   const onHomepage = pathname === "/" || pathname.startsWith("/for/");
   const base = onHomepage ? "" : "/";
+
+  // "/for/engineer" uses that profile's sections; every other page uses the main one's
+  const profileSlug = pathname.startsWith("/for/") ? pathname.split("/")[2] : undefined;
+  const sections = (profileSlug && nav.byProfile[profileSlug]) || nav.main;
+  const links = sections.map((key) => ({ href: `#${key}`, label: NAV_LABELS[key] }));
+  const desktopLinks = links.filter((link) => link.href !== "#contact");
+  // The full row of links needs room: up to 8 fit from laptop width (1024px),
+  // more need a wider screen. Below that, the menu button shows them instead.
+  const wide = desktopLinks.length > 8;
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur">
@@ -35,9 +60,9 @@ export function SiteHeader({ name }: { name: string }) {
           {name}
         </Link>
 
-        <nav aria-label="Main" className="hidden md:block">
+        <nav aria-label="Main" className={wide ? "hidden xl:block" : "hidden lg:block"}>
           <ul className="flex items-center gap-1">
-            {NAV.map((item) => (
+            {desktopLinks.map((item) => (
               <li key={item.href}>
                 <a
                   href={base + item.href}
@@ -64,7 +89,9 @@ export function SiteHeader({ name }: { name: string }) {
             aria-expanded={open}
             aria-controls="mobile-nav"
             aria-label={open ? "Close menu" : "Open menu"}
-            className="inline-flex size-10 items-center justify-center rounded-full border border-border md:hidden"
+            className={`inline-flex size-10 items-center justify-center rounded-full border border-border ${
+              wide ? "xl:hidden" : "lg:hidden"
+            }`}
           >
             {open ? <X className="size-5" aria-hidden /> : <Menu className="size-5" aria-hidden />}
           </button>
@@ -72,9 +99,13 @@ export function SiteHeader({ name }: { name: string }) {
       </div>
 
       {open && (
-        <nav id="mobile-nav" aria-label="Mobile" className="border-t border-border md:hidden">
+        <nav
+          id="mobile-nav"
+          aria-label="Mobile"
+          className={`border-t border-border ${wide ? "xl:hidden" : "lg:hidden"}`}
+        >
           <ul className="mx-auto max-w-6xl px-4 py-2">
-            {[...NAV, { href: "#contact", label: "Contact" }].map((item) => (
+            {links.map((item) => (
               <li key={item.href}>
                 <a
                   href={base + item.href}

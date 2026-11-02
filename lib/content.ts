@@ -7,6 +7,7 @@ import type {
   Faq,
   FocusProfile,
   Project,
+  SectionKey,
   Service,
   ServiceCategory,
   SiteSettings,
@@ -15,6 +16,7 @@ import type {
   Testimonial,
   WorkSample,
 } from "./types";
+import { completeSectionOrder } from "./types";
 
 // Functions the pages call to get their content.
 //
@@ -146,6 +148,43 @@ export async function getHomeContent(profile: FocusProfile) {
     faqs: data.faqs.filter((f) => isPublic(f) && isForProfile(f, profile.id)),
     samples: data.samples.filter((s) => isPublic(s) && isForProfile(s, profile.id)),
     education: data.education.filter((e) => isPublic(e) && isForProfile(e, profile.id)),
+  };
+}
+
+/**
+ * The homepage sections a profile actually shows, in its chosen order. Empty
+ * sections are left out. Used by the homepage and by the header's nav links,
+ * so the two always match.
+ */
+export async function getHomeSections(profile: FocusProfile): Promise<SectionKey[]> {
+  const [settings, content] = await Promise.all([getSettings(), getHomeContent(profile)]);
+  const hasContent: Record<SectionKey, boolean> = {
+    about: settings.about.trim() !== "",
+    services: content.services.length > 0,
+    experience: content.experience.length > 0,
+    samples: content.samples.length > 0,
+    projects: content.projects.length > 0,
+    skills: content.skills.length > 0,
+    education: content.education.length > 0,
+    certifications: content.certificates.length > 0,
+    testimonials: content.testimonials.length > 0,
+    faq: content.faqs.length > 0,
+    contact: true,
+  };
+  return completeSectionOrder(profile.section_order).filter((key) => hasContent[key]);
+}
+
+/**
+ * Nav links for the header: the default profile's sections (used on "/" and
+ * pages like a project), plus each profile's own for "/for/[slug]".
+ */
+export async function getNavSections() {
+  const profiles = await getPublicProfiles();
+  const defaultProfile = await getProfile();
+  const entries = await Promise.all(profiles.map(async (p) => [p.slug, await getHomeSections(p)] as const));
+  return {
+    main: defaultProfile ? await getHomeSections(defaultProfile) : [],
+    byProfile: Object.fromEntries(entries) as Record<string, SectionKey[]>,
   };
 }
 
